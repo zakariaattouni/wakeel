@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>منصة الوكلاء</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    font-family:Tahoma,Arial,sans-serif;
+}
+
+body{
+    margin:0;
+    background:#eef2f7;
+}
+
+header{
+    background:#1e4a6e;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    background:white;
+    padding:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,.1);
+}
+
+nav button{
+    border:none;
+    background:#1e4a6e;
+    color:white;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.page{
+    display:none;
+    padding:20px;
+    max-width:1100px;
+    margin:auto;
+}
+
+.active{
+    display:block;
+}
+
+.card{
+    background:white;
+    margin-bottom:15px;
+    padding:15px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.stat{
+    text-align:center;
+}
+
+.stat h2{
+    color:#1e4a6e;
+    margin:10px 0;
+}
+
+input,textarea,select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+}
+
+.primary{
+    background:#1e4a6e;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border-bottom:1px solid #ddd;
+    padding:10px;
+}
+
+.copyBtn{
+    margin-top:10px;
+}
+
+.badge{
+    background:#27ae60;
+    color:white;
+    padding:4px 10px;
+    border-radius:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>منصة الوكلاء</h1>
+<p>إدارة العملاء والمواد التسويقية</p>
+</header>
+
+<nav>
+<button onclick="showPage('home')">الرئيسية</button>
+<button onclick="showPage('clients')">العملاء</button>
+<button onclick="showPage('apps')">التطبيقات</button>
+<button onclick="showPage('marketing')">التسويق</button>
+<button onclick="showPage('notifications')">الإشعارات</button>
+</nav>
+
+<!-- الرئيسية -->
+
+<div id="home" class="page active">
+
+<div class="grid">
+
+<div class="card stat">
+<h2 id="totalClients">0</h2>
+<p>عملاء مسجلون</p>
+</div>
+
+<div class="card stat">
+<h2>4</h2>
+<p>التطبيقات المتاحة</p>
+</div>
+
+<div class="card stat">
+<h2>فضي</h2>
+<p>مستوى الوكيل</p>
+</div>
+
+</div>
+
+<div class="card">
+<h3>رابط الوكيل</h3>
+
+<input id="agentLink"
+value="https://yourdomain.com/?agent=zak001">
+
+<button class="primary copyBtn"
+onclick="copyAgentLink()">
+نسخ الرابط
+</button>
+
+</div>
+
+</div>
+
+<!-- العملاء -->
+
+<div id="clients" class="page">
+
+<div class="card">
+
+<h3>إضافة عميل جديد</h3>
+
+<input id="clientName" placeholder="اسم العميل">
+
+<input id="clientCountry" placeholder="الدولة">
+
+<input id="clientContact" placeholder="رقم أو معرف التواصل">
+
+<select id="clientApp">
+<option>مدرب التشخيص السني</option>
+<option>QuizDent</option>
+<option>بصمة AI</option>
+<option>الدليل</option>
+</select>
+
+<button class="primary"
+onclick="addClient()">
+إضافة العميل
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>العملاء المسجلون</h3>
+
+<table>
+
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الدولة</th>
+<th>التطبيق</th>
+</tr>
+</thead>
+
+<tbody id="clientTable">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- التطبيقات -->
+
+<div id="apps" class="page">
+
+<div class="card">
+<h3>مدرب التشخيص السني</h3>
+<p>
+تطبيق تدريبي لتطوير مهارات التشخيص السني.
+</p>
+</div>
+
+<div class="card">
+<h3>QuizDent</h3>
+<p>
+اختبارات ومراجعات لطلاب طب الأسنان.
+</p>
+</div>
+
+<div class="card">
+<h3>بصمة AI</h3>
+<p>
+مساعد ذكي للمحتوى والمهام.
+</p>
+</div>
+
+<div class="card">
+<h3>الدليل</h3>
+<p>
+مرجع شامل للمعلومات المهنية.
+</p>
+</div>
+
+</div>
+
+<!-- التسويق -->
+
+<div id="marketing" class="page">
+
+<div class="card">
+
+<h3>منشور جاهز</h3>
+
+<textarea rows="6" id="post1">
+
+هل ترغب بتطوير مهاراتك في التشخيص السني؟
+
+جرّب تطبيق مدرب التشخيص السني الذي يوفر حالات تدريبية وأسئلة تفاعلية تساعدك على اكتساب الخبرة بشكل عملي.
+
+</textarea>
+
+<button class="primary"
+onclick="copyText('post1')">
+نسخ المنشور
+</button>
+
+</div>
+
+</div>
+
+<!-- الإشعارات -->
+
+<div id="notifications" class="page">
+
+<div class="card">
+<span class="badge">جديد</span>
+<p>تم تحديث محتوى تطبيق مدرب التشخيص السني.</p>
+</div>
+
+<div class="card">
+<span class="badge">جديد</span>
+<p>إضافة مواد تسويقية جديدة للوكلاء.</p>
+</div>
+
+</div>
+
+<script>
+
+let clients=[];
+
+function showPage(id){
+
+document.querySelectorAll(".page")
+.forEach(p=>p.classList.remove("active"));
+
+document.getElementById(id)
+.classList.add("active");
+
+}
+
+function copyAgentLink(){
+
+let input=
+document.getElementById("agentLink");
+
+navigator.clipboard.writeText(input.value);
+
+alert("تم نسخ الرابط");
+
+}
+
+function copyText(id){
+
+let txt=
+document.getElementById(id).value;
+
+navigator.clipboard.writeText(txt);
+
+alert("تم النسخ");
+
+}
+
+function addClient(){
+
+let name=
+document.getElementById("clientName").value;
+
+if(name===""){
+alert("أدخل اسم العميل");
+return;
+}
+
+let country=
+document.getElementById("clientCountry").value;
+
+let app=
+document.getElementById("clientApp").value;
+
+clients.push({
+name,
+country,
+app
+});
+
+renderClients();
+
+document.getElementById("clientName").value="";
+document.getElementById("clientCountry").value="";
+document.getElementById("clientContact").value="";
+
+}
+
+function renderClients(){
+
+let html="";
+
+clients.forEach(c=>{
+
+html+=`
+<tr>
+<td>${c.name}</td>
+<td>${c.country}</td>
+<td>${c.app}</td>
+</tr>
+`;
+
+});
+
+document.getElementById("clientTable")
+.innerHTML=html;
+
+document.getElementById("totalClients")
+.innerText=clients.length;
+
+}
+
+</script>
+
+</body>
+</html>
