@@ -7,7 +7,6 @@
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
 <style>
 * { box-sizing:border-box; font-family:Tahoma,Arial,sans-serif; }
 body { margin:0; background:#eef2f7; }
@@ -48,8 +47,7 @@ input, textarea, select {
     background:#1e4a6e; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;
 }
 .danger { background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; margin:2px; }
-.success { background:#27ae60; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; margin:2px; }
-.warning { background:#f39c12; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; margin:2px; }
+.success { background:#27ae60; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; margin:2px; }.warning { background:#f39c12; color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; margin:2px; }
 .whatsapp-btn {
     background:#25D366; color:white; border:none; padding:8px 18px; border-radius:30px;
     cursor:pointer; font-weight:bold; display:inline-flex; align-items:center; gap:8px;
@@ -98,8 +96,7 @@ th, td {
     background:#f9f9f9; border-radius:8px; padding:15px; margin-top:10px;
 }
 .admin-app-edit .preview-img {
-    max-width:150px; max-height:150px; border-radius:8px; margin:10px 0;
-}
+    max-width:150px; max-height:150px; border-radius:8px; margin:10px 0;}
 </style>
 </head>
 <body>
@@ -110,7 +107,6 @@ th, td {
     </div>
     <div class="auth-buttons" id="authButtons"></div>
 </header>
-
 <!-- شاشة تسجيل الدخول -->
 <div id="loginPage" class="page active">
     <div class="login-container">
@@ -130,7 +126,6 @@ th, td {
         <div id="loginError" style="color:red;text-align:center;margin-top:10px;"></div>
     </div>
 </div>
-
 <!-- شاشة تسجيل وكيل -->
 <div id="registerPage" class="page">
     <div class="login-container">
@@ -150,9 +145,7 @@ th, td {
         <div id="regError" style="color:red;text-align:center;margin-top:10px;"></div>
     </div>
 </div>
-
-<!-- التطبيق الرئيسي -->
-<div id="appContainer">
+<!-- التطبيق الرئيسي --><div id="appContainer">
     <nav id="mainNav">
         <button onclick="showPage('home')">الرئيسية</button>
         <button onclick="showPage('clients')">العملاء</button>
@@ -161,7 +154,6 @@ th, td {
         <button onclick="showPage('notifications')">الإشعارات</button>
         <button id="adminNavBtn" class="admin-btn hidden" onclick="showPage('admin')">🛠 الإدارة</button>
     </nav>
-
     <!-- الصفحات -->
     <div id="home" class="page active">
         <div class="grid">
@@ -189,7 +181,6 @@ th, td {
             <button class="primary copyBtn" onclick="copyAgentLink()">نسخ الرابط</button>
         </div>
     </div>
-
     <div id="clients" class="page">
         <div class="card">
             <h3>إضافة عميل جديد</h3>
@@ -203,18 +194,15 @@ th, td {
                 <option>الدليل</option>
             </select>
             <button class="primary" onclick="addClient()">إضافة العميل</button>
-        </div>
-        <div class="card">
+        </div>        <div class="card">
             <h3>العملاء المسجلون</h3>
             <table><thead><tr><th>الاسم</th><th>الدولة</th><th>التطبيق</th></tr></thead><tbody id="clientTable"></tbody></table>
         </div>
     </div>
-
     <!-- صفحة التطبيقات (ديناميكية) -->
     <div id="apps" class="page">
         <div id="appsContainer"></div>
     </div>
-
     <div id="marketing" class="page">
         <div class="card">
             <h3>منشور جاهز</h3>
@@ -222,12 +210,10 @@ th, td {
             <button class="primary" onclick="copyText('post1')">نسخ المنشور</button>
         </div>
     </div>
-
     <div id="notifications" class="page">
         <div class="card"><span class="badge">جديد</span><p>تم تحديث محتوى تطبيق مدرب التشخيص السني.</p></div>
         <div class="card"><span class="badge">جديد</span><p>إضافة مواد تسويقية جديدة للوكلاء.</p></div>
     </div>
-
     <!-- لوحة الإدارة -->
     <div id="admin" class="page">
         <div class="card">
@@ -245,7 +231,6 @@ th, td {
         </div>
     </div>
 </div>
-
 <script>
 // ============================================================
 // 🔑 إعدادات Firebase
@@ -254,16 +239,11 @@ const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
   projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-
 firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const storage = firebase.storage();
-
-// ============================================================
+const db = firebase.firestore();// ============================================================
 // المتغيرات
 // ============================================================
 let currentUser = null;
@@ -274,7 +254,6 @@ let loginType = 'agent';
 let clientsListener = false;
 let agentsListener = false;
 let appsListener = false;
-
 // ============================================================
 // دوال الواجهة
 // ============================================================
@@ -288,7 +267,6 @@ function showRegister() {
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('regError').innerText = '';
 }
-
 function setLoginType(type) {
     loginType = type;
     const agentBtn = document.getElementById('loginTypeAgent');
@@ -308,19 +286,16 @@ function setLoginType(type) {
     }
     document.getElementById('loginError').innerText = '';
 }
-
 // ============================================================
 // تسجيل وكيل جديد
 // ============================================================
 async function registerAgent() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
-    const password = document.getElementById('regPassword').value.trim();
-    const country = document.getElementById('regCountry').value.trim();
+    const password = document.getElementById('regPassword').value.trim();    const country = document.getElementById('regCountry').value.trim();
     const city = document.getElementById('regCity').value.trim();
     const phone = document.getElementById('regPhone').value.trim();
     const errEl = document.getElementById('regError');
-
     if (!name || !email || !password || !country || !city || !phone) {
         errEl.innerText = 'جميع الحقول مطلوبة (بما في ذلك بيانات التواصل)';
         return;
@@ -329,21 +304,18 @@ async function registerAgent() {
         errEl.innerText = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
         return;
     }
-
     try {
         const existing = await db.collection('agents').where('email', '==', email).get();
         if (!existing.empty) {
             errEl.innerText = 'هذا البريد مسجل بالفعل';
             return;
         }
-
         await db.collection('agents').add({
             name, email, password, country, city, phone,
             level: 'فضي',
             status: 'inactive',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         alert('تم تسجيل الوكيل بنجاح، انتظر تفعيل المدير للحساب.');
         document.getElementById('regName').value = '';
         document.getElementById('regEmail').value = '';
@@ -358,21 +330,18 @@ async function registerAgent() {
         errEl.innerText = 'حدث خطأ، تأكد من إعدادات Firebase.';
     }
 }
-
 // ============================================================
 // تسجيل الدخول
 // ============================================================
 async function loginUser() {
     const errEl = document.getElementById('loginError');
     errEl.innerText = '';
-
     if (loginType === 'admin') {
         const password = document.getElementById('loginPassword').value.trim();
         if (password === 'salem1959') {
             currentUser = {
                 email: 'admin@system.com',
-                name: 'المدير العام',
-                level: 'بلاتيني',
+                name: 'المدير العام',                level: 'بلاتيني',
                 isAdmin: true,
                 status: 'active',
                 country: '-',
@@ -386,16 +355,13 @@ async function loginUser() {
         }
         return;
     }
-
     // وكيل
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
-
     if (!email || !password) {
         errEl.innerText = 'أدخل البريد وكلمة المرور';
         return;
     }
-
     try {
         const snapshot = await db.collection('agents').where('email', '==', email).get();
         if (snapshot.empty) {
@@ -404,7 +370,6 @@ async function loginUser() {
         }
         const doc = snapshot.docs[0];
         const data = doc.data();
-
         if (data.password !== password) {
             errEl.innerText = 'كلمة مرور خاطئة';
             return;
@@ -413,7 +378,6 @@ async function loginUser() {
             errEl.innerText = 'الحساب غير مفعّل، راجع المدير';
             return;
         }
-
         currentUser = {
             id: doc.id,
             email: data.email,
@@ -426,13 +390,11 @@ async function loginUser() {
             phone: data.phone || '-'
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        enterApp();
-    } catch (e) {
+        enterApp();    } catch (e) {
         console.error(e);
         errEl.innerText = 'خطأ في الاتصال، تأكد من الإعدادات.';
     }
 }
-
 // ============================================================
 // الدخول للتطبيق
 // ============================================================
@@ -444,7 +406,6 @@ function enterApp() {
         <span style="color:white;margin-left:10px;">👋 ${currentUser.name}</span>
         <button class="logout" onclick="logout()">تسجيل خروج</button>
     `;
-
     const adminBtn = document.getElementById('adminNavBtn');
     if (currentUser.isAdmin) {
         adminBtn.classList.remove('hidden');
@@ -454,29 +415,23 @@ function enterApp() {
             showPage('home');
         }
     }
-
     document.getElementById('userLevel').innerText = currentUser.level || 'فضي';
     updateProfileUI();
-
     if (!clientsListener) {
         listenClients();
         clientsListener = true;
     }
-
     if (currentUser.isAdmin && !agentsListener) {
         listenAgents();
         agentsListener = true;
     }
-
     // الاستماع للتطبيقات (للكل)
     if (!appsListener) {
         listenApps();
         appsListener = true;
     }
-
     showPage('home');
 }
-
 // ============================================================
 // تحديث الملف الشخصي
 // ============================================================
@@ -484,9 +439,7 @@ function updateProfileUI() {
     document.getElementById('profileName').innerText = currentUser.name || '-';
     document.getElementById('profileCountry').innerText = currentUser.country || '-';
     document.getElementById('profileCity').innerText = currentUser.city || '-';
-    document.getElementById('profilePhone').innerText = currentUser.phone || '-';
-
-    const whatsappLink = document.getElementById('whatsappLink');
+    document.getElementById('profilePhone').innerText = currentUser.phone || '-';    const whatsappLink = document.getElementById('whatsappLink');
     const phone = currentUser.phone || '';
     let cleanPhone = phone.replace(/\s/g, '').replace(/[^0-9+]/g, '');
     if (cleanPhone) {
@@ -496,7 +449,6 @@ function updateProfileUI() {
         whatsappLink.style.display = 'none';
     }
 }
-
 // ============================================================
 // تسجيل الخروج
 // ============================================================
@@ -509,7 +461,6 @@ function logout() {
     document.getElementById('loginError').innerText = '';
     setLoginType('agent');
 }
-
 // ============================================================
 // التحقق من الجلسة
 // ============================================================
@@ -537,8 +488,7 @@ function checkSession() {
                                 status: data.status,
                                 country: data.country || '-',
                                 city: data.city || '-',
-                                phone: data.phone || '-'
-                            };
+                                phone: data.phone || '-'                            };
                             localStorage.setItem('currentUser', JSON.stringify(currentUser));
                             enterApp();
                         } else {
@@ -561,7 +511,6 @@ function checkSession() {
     }
     showLogin();
 }
-
 // ============================================================
 // دوال التنقل والنسخ
 // ============================================================
@@ -569,7 +518,6 @@ function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
 }
-
 function copyAgentLink() {
     navigator.clipboard.writeText(document.getElementById('agentLink').value);
     alert('تم نسخ الرابط');
@@ -578,7 +526,6 @@ function copyText(id) {
     navigator.clipboard.writeText(document.getElementById(id).value);
     alert('تم النسخ');
 }
-
 // ============================================================
 // دوال العملاء
 // ============================================================
@@ -590,8 +537,7 @@ async function addClient() {
     const app = document.getElementById('clientApp').value;
     try {
         await db.collection('clients').add({
-            name, country, contact, app,
-            agentEmail: currentUser.email,
+            name, country, contact, app,            agentEmail: currentUser.email,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('clientName').value = '';
@@ -599,7 +545,6 @@ async function addClient() {
         document.getElementById('clientContact').value = '';
     } catch (e) { console.error(e); alert('خطأ في الإضافة'); }
 }
-
 function listenClients() {
     db.collection('clients')
         .where('agentEmail', '==', currentUser.email)
@@ -616,7 +561,6 @@ function listenClients() {
             document.getElementById('clientTable').innerHTML = '<tr><td colspan="3">⚠️ خطأ في التحميل</td></tr>';
         });
 }
-
 function renderClients() {
     let html = '';
     clients.forEach(c => {
@@ -625,7 +569,6 @@ function renderClients() {
     document.getElementById('clientTable').innerHTML = html;
     document.getElementById('totalClients').innerText = clients.length;
 }
-
 // ============================================================
 // دوال التطبيقات (Apps)
 // ============================================================
@@ -635,7 +578,6 @@ const defaultApps = [
     { id: 'app3', name: 'بصمة AI', description: 'مساعد ذكي للمحتوى والمهام.', image: '' },
     { id: 'app4', name: 'الدليل', description: 'مرجع شامل للمعلومات المهنية.', image: '' }
 ];
-
 // تهيئة التطبيقات الافتراضية في Firestore إذا لم تكن موجودة
 async function initDefaultApps() {
     try {
@@ -644,13 +586,11 @@ async function initDefaultApps() {
             for (const app of defaultApps) {
                 await db.collection('apps').doc(app.id).set(app);
             }
-            console.log('✅ تم إنشاء التطبيقات الافتراضية');
-        }
+            console.log('✅ تم إنشاء التطبيقات الافتراضية');        }
     } catch (e) {
         console.warn('⚠️ لا يمكن تهيئة التطبيقات الافتراضية:', e);
     }
 }
-
 function listenApps() {
     db.collection('apps')
         .orderBy('name')
@@ -671,7 +611,6 @@ function listenApps() {
             document.getElementById('appsContainer').innerHTML = '<p style="color:red;">⚠️ خطأ في تحميل التطبيقات</p>';
         });
 }
-
 // عرض التطبيقات للوكلاء (والمدير أيضاً)
 function renderApps() {
     const container = document.getElementById('appsContainer');
@@ -693,12 +632,10 @@ function renderApps() {
     });
     container.innerHTML = html;
 }
-
 // عرض التطبيقات مع واجهة تحرير للمدير (في صفحة الإدارة)
 function renderAdminApps() {
     const container = document.getElementById('adminAppsContainer');
-    if (!currentUser || !currentUser.isAdmin) {
-        container.innerHTML = '';
+    if (!currentUser || !currentUser.isAdmin) {        container.innerHTML = '';
         return;
     }
     if (apps.length === 0) {
@@ -719,8 +656,8 @@ function renderAdminApps() {
                     <textarea id="edit_app_desc_${app.id}" rows="3" class="edit-app-desc">${app.description || ''}</textarea>
                 </div>
                 <div>
-                    <label>رفع صورة جديدة</label>
-                    <input type="file" accept="image/*" id="edit_app_image_${app.id}" class="edit-app-image">
+                    <label>رابط الصورة (URL)</label>
+                    <input type="text" id="edit_app_image_${app.id}" value="${app.image || ''}" placeholder="https://example.com/image.jpg" dir="ltr" class="edit-app-image">
                     <div id="edit_app_preview_${app.id}">
                         ${app.image ? `<img src="${app.image}" class="preview-img">` : ''}
                     </div>
@@ -732,75 +669,47 @@ function renderAdminApps() {
         `;
     });
     container.innerHTML = html;
-
-    // إضافة مستمعات لمعاينة الصور
+    // إضافة مستمعات لمعاينة الصور عند تغيير الرابط
     apps.forEach(app => {
-        const fileInput = document.getElementById(`edit_app_image_${app.id}`);
-        if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(ev) {
-                        const preview = document.getElementById(`edit_app_preview_${app.id}`);
-                        preview.innerHTML = `<img src="${ev.target.result}" class="preview-img">`;
-                    };
-                    reader.readAsDataURL(file);
+        const urlInput = document.getElementById(`edit_app_image_${app.id}`);
+        if (urlInput) {
+            urlInput.addEventListener('input', function(e) {
+                const url = e.target.value.trim();
+                const preview = document.getElementById(`edit_app_preview_${app.id}`);
+                if (url) {
+                    preview.innerHTML = `<img src="${url}" class="preview-img" onerror="this.style.display='none'">`;
+                } else {
+                    preview.innerHTML = '';
                 }
             });
         }
     });
-}
-
-// حفظ التطبيق (رفع الصورة إذا وجدت، ثم تحديث البيانات)
+}// حفظ التطبيق (حفظ رابط الصورة والبيانات)
 async function saveApp(appId) {
     const name = document.getElementById(`edit_app_name_${appId}`).value.trim();
     const desc = document.getElementById(`edit_app_desc_${appId}`).value.trim();
-    const fileInput = document.getElementById(`edit_app_image_${appId}`);
-    const file = fileInput.files[0];
-
+    const imageUrl = document.getElementById(`edit_app_image_${appId}`).value.trim();
     if (!name) {
         alert('الاسم مطلوب');
         return;
     }
-
     try {
-        let imageUrl = apps.find(a => a.id === appId)?.image || '';
-
-        // إذا تم رفع ملف جديد
-        if (file) {
-            // رفع إلى Firebase Storage
-            const storageRef = storage.ref(`apps/${appId}/${file.name}`);
-            const snapshot = await storageRef.put(file);
-            imageUrl = await snapshot.ref.getDownloadURL();
-        }
-
         // تحديث في Firestore
         await db.collection('apps').doc(appId).update({
             name,
             description: desc,
             image: imageUrl
         });
-
         alert('✅ تم حفظ التطبيق بنجاح');
     } catch (e) {
         console.error(e);
         alert('❌ حدث خطأ أثناء الحفظ');
     }
 }
-
-// حذف تطبيق (يُحذف من Firestore والصورة من Storage)
+// حذف تطبيق
 async function deleteApp(appId) {
     if (!confirm('هل أنت متأكد من حذف هذا التطبيق نهائياً؟')) return;
     try {
-        // حذف الصورة من Storage إذا وجدت
-        const app = apps.find(a => a.id === appId);
-        if (app && app.image) {
-            try {
-                const ref = storage.refFromURL(app.image);
-                await ref.delete();
-            } catch (e) { console.warn('لا يمكن حذف الصورة:', e); }
-        }
         await db.collection('apps').doc(appId).delete();
         alert('تم الحذف');
     } catch (e) {
@@ -808,14 +717,12 @@ async function deleteApp(appId) {
         alert('خطأ في الحذف');
     }
 }
-
 // ============================================================
 // دوال الإدارة (الوكلاء)
 // ============================================================
 function listenAgents() {
     if (agentsListener) return;
     agentsListener = true;
-
     db.collection('agents')
         .orderBy('createdAt', 'desc')
         .onSnapshot(snap => {
@@ -826,8 +733,7 @@ function listenAgents() {
                     id: doc.id,
                     name: d.name || '',
                     email: d.email || '',
-                    country: d.country || '-',
-                    city: d.city || '-',
+                    country: d.country || '-',                    city: d.city || '-',
                     phone: d.phone || '-',
                     level: d.level || 'فضي',
                     status: d.status || 'inactive'
@@ -839,7 +745,6 @@ function listenAgents() {
             document.getElementById('adminAgentsTable').innerHTML = '<tr><td colspan="8">⚠️ خطأ في تحميل الوكلاء</td></tr>';
         });
 }
-
 function renderAgentsAdmin() {
     let html = '';
     agents.forEach(a => {
@@ -862,7 +767,6 @@ function renderAgentsAdmin() {
     });
     document.getElementById('adminAgentsTable').innerHTML = html;
 }
-
 async function toggleAgentStatus(id, newStatus) {
     if (!confirm(`هل أنت متأكد من تغيير الحالة إلى ${newStatus === 'active' ? 'مفعّل' : 'غير مفعّل'}؟`)) return;
     try {
@@ -870,7 +774,6 @@ async function toggleAgentStatus(id, newStatus) {
         alert('تم التحديث');
     } catch (e) { console.error(e); alert('خطأ'); }
 }
-
 async function upgradeAgent(id, currentLevel) {
     const levels = ['فضي', 'ذهبي', 'بلاتيني'];
     let idx = levels.indexOf(currentLevel);
@@ -879,14 +782,12 @@ async function upgradeAgent(id, currentLevel) {
     if (newLevel === currentLevel) {
         alert('الوكيل في أعلى مستوى');
         return;
-    }
-    if (!confirm(`ترقية الوكيل إلى مستوى ${newLevel}؟`)) return;
+    }    if (!confirm(`ترقية الوكيل إلى مستوى ${newLevel}؟`)) return;
     try {
         await db.collection('agents').doc(id).update({ level: newLevel });
         alert('تمت الترقية');
     } catch (e) { console.error(e); alert('خطأ'); }
 }
-
 async function deleteAgent(id) {
     if (!confirm('هل أنت متأكد من حذف هذا الوكيل نهائياً؟')) return;
     try {
@@ -894,7 +795,6 @@ async function deleteAgent(id) {
         alert('تم الحذف');
     } catch (e) { console.error(e); alert('خطأ'); }
 }
-
 // ============================================================
 // بدء التطبيق
 // ============================================================
