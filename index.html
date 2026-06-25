@@ -10,7 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 <style>
-/* ===== نفس الـ CSS السابق مع إضافة style للنافذة المنبثقة ===== */
+/* ===== نفس الـ CSS السابق مع إضافة تنسيق البطاقة الملونة ===== */
 * { box-sizing:border-box; font-family:Tahoma,Arial,sans-serif; }
 body { margin:0; background:#eef2f7; }
 .toast-container { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:10000; display:flex; flex-direction:column; gap:10px; align-items:center; }
@@ -94,6 +94,35 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 .modal-box input { width:100%; margin-bottom:12px; }
 .modal-box .btn-row { display:flex; gap:10px; justify-content:center; margin-top:10px; }
 .modal-box .btn-row button { flex:1; }
+
+/* ===== البطاقة الملونة للرسالة ===== */
+.message-card {
+    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+    border-right: 6px solid #1e4a6e;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.message-card h3 {
+    color: #1e4a6e;
+    margin-top: 0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.message-card .content {
+    font-size: 16px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    color: #333;
+    word-break: break-word;
+}
+.message-card .empty-message {
+    color: #888;
+    font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -127,7 +156,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     <div class="auth-buttons" id="authButtons"></div>
 </header>
 
-<!-- ===== صفحات الدخول والتسجيل (نفس السابق) ===== -->
+<!-- ===== صفحات الدخول والتسجيل ===== -->
 <div id="loginPage" class="page active">
     <div class="login-container">
         <h2>تسجيل الدخول</h2>
@@ -176,7 +205,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <button id="adminNavBtn" class="admin-btn hidden" onclick="showPage('admin')">🛠 الإدارة</button>
     </nav>
 
-    <!-- صفحة الرئيسية (تم إضافة زر تغيير كلمة المرور) -->
+    <!-- الصفحة الرئيسية (تم حذف رابط الوكيل وإضافة البطاقة الملونة) -->
     <div id="home" class="page active">
         <div class="grid">
             <div class="card stat"><h2 id="totalClients">0</h2><p>عملاء مسجلون</p></div>
@@ -194,19 +223,21 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
                 </div>
                 <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
                     <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display:none;">📱 تواصل عبر واتساب</a>
-                    <!-- ✅ زر تغيير كلمة المرور (يظهر للوكلاء فقط) -->
                     <button id="changePassBtn" class="warning" onclick="openChangePassword()" style="display:none;">🔑 تغيير كلمة المرور</button>
                 </div>
             </div>
         </div>
-        <div class="card">
-            <h3>رابط الوكيل</h3>
-            <input id="agentLink" value="https://yourdomain.com/?agent=zak001">
-            <button class="primary copyBtn" onclick="copyAgentLink()">نسخ الرابط</button>
+        
+        <!-- ✅ بطاقة الرسالة الملونة (بدلاً من رابط الوكيل) -->
+        <div class="message-card">
+            <h3>📢 رسالة من الإدارة</h3>
+            <div class="content" id="agentMessageContent">
+                <span class="empty-message">جاري تحميل الرسالة...</span>
+            </div>
         </div>
     </div>
 
-    <!-- باقي الصفحات (نفس السابق) -->
+    <!-- صفحة العملاء -->
     <div id="clients" class="page">
         <div class="card">
             <h3>إضافة عميل جديد</h3>
@@ -228,6 +259,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- صفحة التطبيقات -->
     <div id="apps" class="page">
         <div class="card">
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -238,6 +270,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <div id="appsContainer"></div>
     </div>
 
+    <!-- صفحة التسويق -->
     <div id="marketing" class="page">
         <div class="card">
             <h3>منشور جاهز</h3>
@@ -246,11 +279,13 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- صفحة الإشعارات -->
     <div id="notifications" class="page">
         <div class="card"><span class="badge">جديد</span><p>تم تحديث محتوى تطبيق مدرب التشخيص السني.</p></div>
         <div class="card"><span class="badge">جديد</span><p>إضافة مواد تسويقية جديدة للوكلاء.</p></div>
     </div>
 
+    <!-- صفحة الإدارة -->
     <div id="admin" class="page">
         <div class="card">
             <h3>👥 إدارة الوكلاء</h3>
@@ -280,6 +315,18 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
             </div>
         </div>
 
+        <!-- ✅ قسم رسالة الوكلاء (جديد) -->
+        <div class="card">
+            <h3>📢 رسالة الوكلاء</h3>
+            <p style="font-size:14px; color:#666;">سيظهر هذا النص في الصفحة الرئيسية لكل وكيل (في البطاقة الزرقاء).</p>
+            <textarea id="adminMessageInput" rows="6" placeholder="اكتب رسالتك للوكلاء هنا..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; font-family:Tahoma,Arial,sans-serif;"></textarea>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="primary" onclick="saveAgentMessage()">💾 حفظ الرسالة</button>
+                <button class="warning" onclick="clearAgentMessage()">🗑 مسح الرسالة</button>
+            </div>
+            <div id="adminMessageStatus" style="margin-top:10px; font-size:14px; color:#666;"></div>
+        </div>
+
         <div class="card">
             <h3>📱 إدارة التطبيقات</h3>
             <div class="admin-actions-bar">
@@ -294,7 +341,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 
 <script>
 // ============================================================
-// 🔑 Firebase - Realtime Database (نفس السابق)
+// 🔑 Firebase - Realtime Database
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDO-l9ddik6fJb1keuHPu56tvJFKtterks",
@@ -406,6 +453,7 @@ let loginType = 'agent';
 let clientsListener = null;
 let agentsListener = null;
 let appsListener = null;
+let agentMessageListener = null;
 
 // ============================================================
 // دوال الواجهة (تسجيل الدخول، الخروج، إلخ)
@@ -440,9 +488,6 @@ function setLoginType(type) {
     document.getElementById('loginError').innerText = '';
 }
 
-// ============================================================
-// ✅ تسجيل وكيل جديد (Realtime Database)
-// ============================================================
 async function registerAgent() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -502,9 +547,6 @@ async function registerAgent() {
     }
 }
 
-// ============================================================
-// ✅ تسجيل الدخول (Realtime Database)
-// ============================================================
 async function loginUser() {
     const errEl = document.getElementById('loginError');
     errEl.innerText = '';
@@ -564,7 +606,7 @@ async function loginUser() {
             country: agentData.country || '-',
             city: agentData.city || '-',
             phone: agentData.phone || '-',
-            password: agentData.password // نحتفظ بها للتحقق عند تغيير كلمة المرور
+            password: agentData.password
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         showToast('✅ تم تسجيل الدخول بنجاح', 'success');
@@ -577,7 +619,77 @@ async function loginUser() {
 }
 
 // ============================================================
-// ✅ تغيير كلمة المرور (وظيفة جديدة)
+// ✅ دوال رسالة الإدارة (جديدة)
+// ============================================================
+function listenToAgentMessage() {
+    if (agentMessageListener) agentMessageListener.off();
+    agentMessageListener = db.ref('settings/agent_message');
+    agentMessageListener.on('value', snapshot => {
+        const val = snapshot.val();
+        const contentEl = document.getElementById('agentMessageContent');
+        if (val && val.trim().length > 0) {
+            contentEl.innerHTML = val.replace(/\n/g, '<br>');
+        } else {
+            contentEl.innerHTML = '<span class="empty-message">📭 لم يتم إضافة رسالة بعد. تواصل مع الإدارة.</span>';
+        }
+        // تحديث حقل الإدارة إذا كان المدير مسجلاً
+        if (currentUser && currentUser.isAdmin) {
+            document.getElementById('adminMessageInput').value = val || '';
+        }
+        updateConnectionStatus(true);
+    }, error => {
+        console.error('Message listener error:', error);
+        updateConnectionStatus(false);
+    });
+}
+
+function saveAgentMessage() {
+    if (!currentUser || !currentUser.isAdmin) {
+        showToast('هذه الميزة للمدير فقط', 'error');
+        return;
+    }
+    const msg = document.getElementById('adminMessageInput').value.trim();
+    const statusEl = document.getElementById('adminMessageStatus');
+    statusEl.innerText = '🔄 جاري الحفظ...';
+    
+    db.ref('settings/agent_message').set(msg)
+        .then(() => {
+            statusEl.innerText = '✅ تم حفظ الرسالة بنجاح!';
+            showToast('✅ تم حفظ الرسالة', 'success');
+            setTimeout(() => { statusEl.innerText = ''; }, 5000);
+        })
+        .catch(err => {
+            console.error('Save message error:', err);
+            statusEl.innerText = '❌ فشل الحفظ: ' + err.message;
+            showToast('❌ فشل حفظ الرسالة', 'error');
+        });
+}
+
+function clearAgentMessage() {
+    if (!currentUser || !currentUser.isAdmin) {
+        showToast('هذه الميزة للمدير فقط', 'error');
+        return;
+    }
+    if (!confirm('هل أنت متأكد من مسح الرسالة؟')) return;
+    const statusEl = document.getElementById('adminMessageStatus');
+    statusEl.innerText = '🔄 جاري المسح...';
+    
+    db.ref('settings/agent_message').set('')
+        .then(() => {
+            document.getElementById('adminMessageInput').value = '';
+            statusEl.innerText = '🗑 تم مسح الرسالة!';
+            showToast('🗑 تم مسح الرسالة', 'warning');
+            setTimeout(() => { statusEl.innerText = ''; }, 5000);
+        })
+        .catch(err => {
+            console.error('Clear message error:', err);
+            statusEl.innerText = '❌ فشل المسح: ' + err.message;
+            showToast('❌ فشل مسح الرسالة', 'error');
+        });
+}
+
+// ============================================================
+// ✅ دوال تغيير كلمة المرور (نفس السابق)
 // ============================================================
 function openChangePassword() {
     if (!currentUser || currentUser.isAdmin) {
@@ -601,7 +713,6 @@ async function submitChangePassword() {
     const confirmPass = document.getElementById('confirmPassword').value.trim();
     const errEl = document.getElementById('changePassError');
 
-    // التحقق من صحة المدخلات
     if (!oldPass || !newPass || !confirmPass) {
         errEl.innerText = 'جميع الحقول مطلوبة';
         return;
@@ -629,13 +740,9 @@ async function submitChangePassword() {
     btn.innerHTML = '<span class="loading"></span> جاري التحديث...';
 
     try {
-        // تحديث في Realtime Database
         await db.ref(`agents/${currentUser.id}/password`).set(newPass);
-
-        // تحديث في localStorage
         currentUser.password = newPass;
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
         showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
         closeChangePassword();
     } catch (e) {
@@ -649,7 +756,7 @@ async function submitChangePassword() {
 }
 
 // ============================================================
-// الدخول للتطبيق (مع إظهار زر تغيير كلمة المرور للوكلاء)
+// الدخول للتطبيق
 // ============================================================
 function enterApp() {
     document.getElementById('loginPage').classList.remove('active');
@@ -664,10 +771,10 @@ function enterApp() {
     const adminBtn = document.getElementById('adminNavBtn');
     if (currentUser.isAdmin) {
         adminBtn.classList.remove('hidden');
-        document.getElementById('changePassBtn').style.display = 'none'; // المدير لا يحتاج تغيير كلمة مرور (ثابتة)
+        document.getElementById('changePassBtn').style.display = 'none';
     } else {
         adminBtn.classList.add('hidden');
-        document.getElementById('changePassBtn').style.display = 'inline-block'; // الوكيل يرى الزر
+        document.getElementById('changePassBtn').style.display = 'inline-block';
         if (document.getElementById('admin').classList.contains('active')) showPage('home');
     }
 
@@ -682,13 +789,11 @@ function enterApp() {
     }
 
     listenToRealtimeChanges();
+    listenToAgentMessage(); // ✅ بدء الاستماع للرسالة
 
     showPage('home');
 }
 
-// ============================================================
-// باقي الدوال (نفس السابق تماماً)
-// ============================================================
 function updateProfileUI() {
     document.getElementById('profileName').innerText = currentUser.name || '-';
     document.getElementById('profileCountry').innerText = currentUser.country || '-';
@@ -706,6 +811,7 @@ function logout() {
     if (clientsListener) { clientsListener.off(); clientsListener = null; }
     if (agentsListener) { agentsListener.off(); agentsListener = null; }
     if (appsListener) { appsListener.off(); appsListener = null; }
+    if (agentMessageListener) { agentMessageListener.off(); agentMessageListener = null; }
     currentUser = null;
     localStorage.removeItem('currentUser');
     document.getElementById('appContainer').style.display = 'none';
@@ -767,10 +873,6 @@ function checkSession() {
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
-}
-function copyAgentLink() {
-    navigator.clipboard.writeText(document.getElementById('agentLink').value);
-    showToast('📋 تم نسخ الرابط', 'success');
 }
 function copyText(id) {
     navigator.clipboard.writeText(document.getElementById(id).value);
