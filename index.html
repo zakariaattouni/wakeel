@@ -3,18 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>منصة الوكلاء - Offline First</title>
+<title>منصة الوكلاء - Realtime DB</title>
 <meta name="theme-color" content="#1e4a6e">
 <link rel="manifest" id="manifest-link">
 
 <!-- Firebase SDKs (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<!-- ✅ إضافة تحليلات Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 
 <style>
-/* ===== CSS الكامل (نفس السابق، لم يتغير) ===== */
+/* ===== نفس الـ CSS السابق (لم يتغير) ===== */
 * { box-sizing:border-box; font-family:Tahoma,Arial,sans-serif; }
 body { margin:0; background:#eef2f7; }
 .toast-container {
@@ -185,7 +184,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     <div class="auth-buttons" id="authButtons"></div>
 </header>
 
-<!-- صفحات الدخول والتسجيل -->
+<!-- ===== صفحات الدخول والتسجيل ===== -->
 <div id="loginPage" class="page active">
     <div class="login-container">
         <h2>تسجيل الدخول</h2>
@@ -223,6 +222,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     </div>
 </div>
 
+<!-- ===== التطبيق ===== -->
 <div id="appContainer">
     <nav id="mainNav">
         <button onclick="showPage('home')">الرئيسية</button>
@@ -233,6 +233,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <button id="adminNavBtn" class="admin-btn hidden" onclick="showPage('admin')">🛠 الإدارة</button>
     </nav>
 
+    <!-- الصفحة الرئيسية -->
     <div id="home" class="page active">
         <div class="grid">
             <div class="card stat"><h2 id="totalClients">0</h2><p>عملاء مسجلون</p></div>
@@ -258,6 +259,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- صفحة العملاء -->
     <div id="clients" class="page">
         <div class="card">
             <h3>إضافة عميل جديد</h3>
@@ -279,6 +281,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- صفحة التطبيقات -->
     <div id="apps" class="page">
         <div class="card">
             <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
@@ -289,6 +292,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <div id="appsContainer"></div>
     </div>
 
+    <!-- صفحة التسويق -->
     <div id="marketing" class="page">
         <div class="card">
             <h3>منشور جاهز</h3>
@@ -297,11 +301,13 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- صفحة الإشعارات -->
     <div id="notifications" class="page">
         <div class="card"><span class="badge">جديد</span><p>تم تحديث محتوى تطبيق مدرب التشخيص السني.</p></div>
         <div class="card"><span class="badge">جديد</span><p>إضافة مواد تسويقية جديدة للوكلاء.</p></div>
     </div>
 
+    <!-- صفحة الإدارة -->
     <div id="admin" class="page">
         <div class="card">
             <h3>👥 إدارة الوكلاء</h3>
@@ -345,7 +351,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 
 <script>
 // ============================================================
-// 🔑 Firebase - الإعدادات الجديدة (مع التحليلات)
+// 🔑 Firebase - باستخدام Realtime Database
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDO-l9ddik6fJb1keuHPu56tvJFKtterks",
@@ -354,24 +360,13 @@ const firebaseConfig = {
   storageBucket: "homework-6522a.firebasestorage.app",
   messagingSenderId: "638853371868",
   appId: "1:638853371868:web:cd4f0bf698ce53cafaa119",
-  measurementId: "G-83FNCC5T55"
+  measurementId: "G-83FNCC5T55",
+  databaseURL: "https://homework-6522a-default-rtdb.firebaseio.com/"  // ✅ مهم: نضيف رابط Realtime Database
 };
 
-// تهيئة Firebase
 firebase.initializeApp(firebaseConfig);
-
-// ✅ تفعيل التحليلات (Analytics)
 firebase.analytics();
-
-// إعدادات Firestore (تعطيل التخزين المؤقت لتجنب التعارضات)
-firebase.firestore().settings({
-    cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-    host: 'firestore.googleapis.com',
-    ssl: true,
-    experimentalForceLongPolling: true
-});
-
-const db = firebase.firestore();
+const db = firebase.database(); // ✅ استخدم Realtime Database بدلاً من Firestore
 
 // ============================================================
 // نظام الإشعارات ومؤشر الاتصال
@@ -466,11 +461,10 @@ let clients = [];
 let agents = [];
 let apps = [];
 let loginType = 'agent';
-let clientsListener = false;
-let agentsListener = false;
-let appsListener = false;
-let allClientsListener = false;
 let syncInterval = null;
+let clientsListener = null;
+let agentsListener = null;
+let appsListener = null;
 
 // ============================================================
 // دوال الواجهة (تسجيل الدخول، الخروج، إلخ)
@@ -505,6 +499,9 @@ function setLoginType(type) {
     document.getElementById('loginError').innerText = '';
 }
 
+// ============================================================
+// ✅ تسجيل وكيل جديد (Realtime Database)
+// ============================================================
 async function registerAgent() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -530,8 +527,9 @@ async function registerAgent() {
     btn.innerHTML = '<span class="loading"></span> جاري التسجيل...';
     
     try {
-        const existing = await db.collection('agents').where('email', '==', email).limit(1).get();
-        if (!existing.empty) {
+        // التحقق من عدم وجود البريد
+        const snapshot = await db.ref('agents').orderByChild('email').equalTo(email).once('value');
+        if (snapshot.exists()) {
             errEl.innerText = 'هذا البريد مسجل بالفعل';
             showToast('البريد الإلكتروني مسجل مسبقاً', 'error');
             btn.disabled = false;
@@ -539,17 +537,13 @@ async function registerAgent() {
             return;
         }
         
-        const newAgentRef = db.collection('agents').doc();
-        const agentId = newAgentRef.id;
-        const agentData = {
+        const newAgentRef = db.ref('agents').push();
+        const agentId = newAgentRef.key;
+        await newAgentRef.set({
             name, email, password, country, city, phone,
             level: 'فضي', status: 'inactive',
-            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await newAgentRef.set(agentData, { merge: false });
-        const verifyDoc = await newAgentRef.get();
-        if (!verifyDoc.exists) throw new Error('فشل التحقق من الحفظ في الخادم');
+            createdAt: Date.now()
+        });
         
         showToast('✅ تم تسجيل الوكيل بنجاح! انتظر تفعيل المدير', 'success', 5000);
         document.getElementById('regName').value = '';
@@ -562,15 +556,16 @@ async function registerAgent() {
         setTimeout(() => { showLogin(); btn.disabled = false; btn.innerHTML = 'تسجيل'; }, 2000);
     } catch (e) {
         console.error('❌ Register error:', e);
-        let errorMsg = e.message;
-        if (errorMsg.includes('Missing or insufficient permissions')) errorMsg = 'مشكلة في صلاحيات Firestore - راجع قواعد الأمان';
-        errEl.innerText = 'حدث خطأ: ' + errorMsg;
-        showToast('❌ ' + errorMsg, 'error', 8000);
+        errEl.innerText = 'حدث خطأ: ' + e.message;
+        showToast('❌ ' + e.message, 'error', 8000);
         btn.disabled = false;
         btn.innerHTML = 'تسجيل';
     }
 }
 
+// ============================================================
+// ✅ تسجيل الدخول (Realtime Database)
+// ============================================================
 async function loginUser() {
     const errEl = document.getElementById('loginError');
     errEl.innerText = '';
@@ -598,28 +593,38 @@ async function loginUser() {
         return;
     }
     try {
-        const snapshot = await db.collection('agents').where('email', '==', email).get();
-        if (snapshot.empty) {
+        const snapshot = await db.ref('agents').orderByChild('email').equalTo(email).once('value');
+        if (!snapshot.exists()) {
             errEl.innerText = 'البريد غير مسجل';
             showToast('❌ البريد غير مسجل', 'error');
             return;
         }
-        const doc = snapshot.docs[0];
-        const data = doc.data();
-        if (data.password !== password) {
+        let agentData = null;
+        let agentId = null;
+        snapshot.forEach(child => {
+            agentId = child.key;
+            agentData = child.val();
+        });
+        if (agentData.password !== password) {
             errEl.innerText = 'كلمة مرور خاطئة';
             showToast('❌ كلمة المرور خاطئة', 'error');
             return;
         }
-        if (data.status !== 'active') {
+        if (agentData.status !== 'active') {
             errEl.innerText = 'الحساب غير مفعّل، راجع المدير';
             showToast('⚠️ الحساب غير مفعّل، انتظر المدير', 'warning', 5000);
             return;
         }
         currentUser = {
-            id: doc.id, email: data.email, name: data.name,
-            level: data.level || 'فضي', isAdmin: false, status: data.status,
-            country: data.country || '-', city: data.city || '-', phone: data.phone || '-'
+            id: agentId,
+            email: agentData.email,
+            name: agentData.name,
+            level: agentData.level || 'فضي',
+            isAdmin: false,
+            status: agentData.status,
+            country: agentData.country || '-',
+            city: agentData.city || '-',
+            phone: agentData.phone || '-'
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         showToast('✅ تم تسجيل الدخول بنجاح', 'success');
@@ -631,6 +636,9 @@ async function loginUser() {
     }
 }
 
+// ============================================================
+// الدخول للتطبيق
+// ============================================================
 function enterApp() {
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -656,31 +664,12 @@ function enterApp() {
     loadAppsFromLocal();
     if (currentUser.isAdmin) {
         loadAgentsFromLocal();
-        loadAllClientsFromLocal();
     } else {
         loadClientsFromLocal();
     }
     
-    // المزامنة مع Firebase في الخلفية
-    syncAppsFromFirebase(false);
-    if (currentUser.isAdmin) {
-        syncAgents(false);
-        syncAllClients(false);
-    } else {
-        syncClients(false);
-    }
-    
-    // مزامنة دورية كل 5 دقائق
-    if (syncInterval) clearInterval(syncInterval);
-    syncInterval = setInterval(() => {
-        syncAppsFromFirebase(false);
-        if (currentUser.isAdmin) {
-            syncAgents(false);
-            syncAllClients(false);
-        } else {
-            syncClients(false);
-        }
-    }, 300000);
+    // الاستماع للتغييرات في Realtime Database
+    listenToRealtimeChanges();
     
     showPage('home');
 }
@@ -699,7 +688,9 @@ function updateProfileUI() {
 
 function logout() {
     if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
-    if (syncInterval) clearInterval(syncInterval);
+    if (clientsListener) { clientsListener.off(); clientsListener = null; }
+    if (agentsListener) { agentsListener.off(); agentsListener = null; }
+    if (appsListener) { appsListener.off(); appsListener = null; }
     currentUser = null;
     localStorage.removeItem('currentUser');
     document.getElementById('appContainer').style.display = 'none';
@@ -721,14 +712,21 @@ function checkSession() {
                 return;
             }
             if (!user.isAdmin && user.email) {
-                db.collection('agents').where('email', '==', user.email).get().then(snap => {
-                    if (!snap.empty) {
-                        const data = snap.docs[0].data();
+                db.ref('agents').orderByChild('email').equalTo(user.email).once('value').then(snap => {
+                    if (snap.exists()) {
+                        let data = null;
+                        snap.forEach(child => { data = child.val(); });
                         if (data.status === 'active') {
                             currentUser = {
-                                id: snap.docs[0].id, email: data.email, name: data.name,
-                                level: data.level || 'فضي', isAdmin: false, status: data.status,
-                                country: data.country || '-', city: data.city || '-', phone: data.phone || '-'
+                                id: Object.keys(snap.val())[0],
+                                email: data.email,
+                                name: data.name,
+                                level: data.level || 'فضي',
+                                isAdmin: false,
+                                status: data.status,
+                                country: data.country || '-',
+                                city: data.city || '-',
+                                phone: data.phone || '-'
                             };
                             localStorage.setItem('currentUser', JSON.stringify(currentUser));
                             enterApp();
@@ -763,7 +761,118 @@ function copyText(id) {
 }
 
 // ============================================================
-// دوال العملاء (Offline-First)
+// ✅ الاستماع للتغييرات في Realtime Database
+// ============================================================
+function listenToRealtimeChanges() {
+    // الاستماع للتطبيقات
+    if (appsListener) appsListener.off();
+    appsListener = db.ref('apps');
+    appsListener.on('value', snapshot => {
+        const data = snapshot.val();
+        if (data) {
+            apps = Object.keys(data).map(key => ({
+                id: key,
+                name: data[key].name || 'بدون اسم',
+                description: data[key].description || '',
+                image: data[key].image || ''
+            }));
+        } else {
+            apps = [];
+        }
+        saveAppsToLocal();
+        renderApps();
+        if (currentUser && currentUser.isAdmin) renderAdminApps();
+        document.getElementById('totalApps').innerText = apps.length;
+        updateConnectionStatus(true);
+    }, error => {
+        console.error('Apps listener error:', error);
+        updateConnectionStatus(false);
+        loadAppsFromLocal();
+    });
+
+    // إذا كان وكيلاً، استمع لعملائه
+    if (!currentUser.isAdmin && currentUser.id) {
+        if (clientsListener) clientsListener.off();
+        clientsListener = db.ref('clients').orderByChild('agentId').equalTo(currentUser.id);
+        clientsListener.on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                clients = Object.keys(data).map(key => ({
+                    id: key,
+                    name: data[key].name,
+                    country: data[key].country,
+                    app: data[key].app
+                }));
+            } else {
+                clients = [];
+            }
+            saveClientsToLocal();
+            renderClients();
+            document.getElementById('totalClients').innerText = clients.length;
+        }, error => {
+            console.error('Clients listener error:', error);
+            loadClientsFromLocal();
+        });
+    }
+    
+    // إذا كان مديراً، استمع للوكلاء والعملاء
+    if (currentUser.isAdmin) {
+        // الوكلاء
+        if (agentsListener) agentsListener.off();
+        agentsListener = db.ref('agents');
+        agentsListener.on('value', snapshot => {
+            const data = snapshot.val();
+            if (data) {
+                agents = Object.keys(data).map(key => ({
+                    id: key,
+                    name: data[key].name || '',
+                    email: data[key].email || '',
+                    country: data[key].country || '-',
+                    city: data[key].city || '-',
+                    phone: data[key].phone || '-',
+                    level: data[key].level || 'فضي',
+                    status: data[key].status || 'inactive'
+                }));
+            } else {
+                agents = [];
+            }
+            saveAgentsToLocal();
+            renderAgentsAdmin();
+        }, error => {
+            console.error('Agents listener error:', error);
+            loadAgentsFromLocal();
+        });
+
+        // جميع العملاء (للمدير)
+        db.ref('clients').on('value', snapshot => {
+            const data = snapshot.val();
+            const tbody = document.getElementById('adminClientsTable');
+            if (!data) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">📭 لا يوجد عملاء مسجلون</td></tr>';
+                return;
+            }
+            let html = '';
+            Object.keys(data).forEach(key => {
+                const d = data[key];
+                const agentName = d.agentName || 'غير معروف';
+                html += `<tr>
+                    <td>${d.name || '-'}</td>
+                    <td>${d.country || '-'}</td>
+                    <td>${d.app || '-'}</td>
+                    <td>${agentName}</td>
+                    <td><button class="danger" onclick="deleteClientByAdmin('${key}')">🗑 حذف</button></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }, error => {
+            console.error('All clients listener error:', error);
+            document.getElementById('adminClientsTable').innerHTML = '<tr><td colspan="5">⚠️ فشل التحميل</td></tr>';
+        });
+    }
+}
+
+// ============================================================
+// دوال العملاء (محلي + Realtime DB)
 // ============================================================
 function saveClientsToLocal() {
     if (currentUser && currentUser.id) {
@@ -796,14 +905,14 @@ async function addClient() {
     const contact = document.getElementById('clientContact').value.trim();
     const app = document.getElementById('clientApp').value;
     const newClient = {
-        id: 'cl_' + Date.now(),
         name, country, contact, app,
         agentId: currentUser.id,
         agentName: currentUser.name,
-        createdAt: new Date().toISOString()
+        createdAt: Date.now()
     };
     
-    clients.unshift(newClient);
+    // إضافة محلياً
+    clients.unshift({ id: 'temp_' + Date.now(), name, country, app });
     saveClientsToLocal();
     renderClients();
     document.getElementById('totalClients').innerText = clients.length;
@@ -813,12 +922,7 @@ async function addClient() {
     showToast('✅ تمت إضافة العميل محلياً', 'success');
     
     try {
-        await db.collection('clients').doc(newClient.id).set({
-            name, country, contact, app,
-            agentId: newClient.agentId,
-            agentName: newClient.agentName,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: false });
+        await db.ref('clients').push(newClient);
         showToast('✅ تم رفع العميل إلى الخادم', 'success');
         updateConnectionStatus(true);
     } catch (e) {
@@ -828,42 +932,43 @@ async function addClient() {
     }
 }
 
-function syncClients(showToastMsg = true) {
+function syncClients() {
+    showToast('🔄 جاري المزامنة...', 'info', 3000);
     if (!currentUser || !currentUser.id) return;
-    if (showToastMsg) showToast('🔄 جاري مزامنة العملاء...', 'info', 3000);
-    updateConnectionStatus(false);
-    db.collection('clients')
-        .where('agentId', '==', currentUser.id)
-        .orderBy('createdAt', 'desc')
-        .get()
+    db.ref('clients').orderByChild('agentId').equalTo(currentUser.id).once('value')
         .then(snapshot => {
-            const remoteClients = [];
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                remoteClients.push({ id: doc.id, name: d.name, country: d.country, app: d.app });
-            });
-            // دمج: استبدال المحلي بالبعيد (نفضل البعيد لأنه الأحدث)
-            clients = remoteClients;
+            const data = snapshot.val();
+            if (data) {
+                clients = Object.keys(data).map(key => ({
+                    id: key,
+                    name: data[key].name,
+                    country: data[key].country,
+                    app: data[key].app
+                }));
+            } else {
+                clients = [];
+            }
             saveClientsToLocal();
             renderClients();
             document.getElementById('totalClients').innerText = clients.length;
+            showToast('✅ تمت المزامنة', 'success');
             updateConnectionStatus(true);
-            if (showToastMsg) showToast(`✅ تمت مزامنة العملاء (${clients.length})`, 'success');
         })
         .catch(err => {
-            console.error('❌ Sync clients error:', err);
+            console.error('Sync clients error:', err);
+            showToast('⚠️ فشل المزامنة', 'warning', 5000);
             updateConnectionStatus(false);
-            if (showToastMsg) showToast('⚠️ فشل المزامنة، عرض البيانات المحلية', 'warning', 5000);
             loadClientsFromLocal();
         });
 }
 
 // ============================================================
-// دوال التطبيقات (Offline-First)
+// دوال التطبيقات (محلي + Realtime DB)
 // ============================================================
 function saveAppsToLocal() {
     localStorage.setItem('appsData', JSON.stringify(apps));
 }
+
 function loadAppsFromLocal() {
     const stored = localStorage.getItem('appsData');
     if (stored) {
@@ -871,6 +976,7 @@ function loadAppsFromLocal() {
     }
     return false;
 }
+
 function renderApps() {
     const container = document.getElementById('appsContainer');
     if (apps.length === 0) {
@@ -888,6 +994,7 @@ function renderApps() {
     });
     container.innerHTML = html;
 }
+
 function renderAdminApps() {
     const container = document.getElementById('adminAppsContainer');
     if (!currentUser || !currentUser.isAdmin) { container.innerHTML = ''; return; }
@@ -922,56 +1029,60 @@ function renderAdminApps() {
     });
 }
 
-function syncAppsFromFirebase(showToastMsg = true) {
-    if (showToastMsg) showToast('🔄 جاري مزامنة التطبيقات...', 'info', 3000);
-    updateConnectionStatus(false);
-    db.collection('apps').orderBy('name').get()
+function syncApps() {
+    showToast('🔄 جاري المزامنة...', 'info', 3000);
+    db.ref('apps').once('value')
         .then(snapshot => {
-            const remoteApps = [];
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                remoteApps.push({ id: doc.id, name: d.name || 'بدون اسم', description: d.description || '', image: d.image || '' });
-            });
-            apps = remoteApps;
+            const data = snapshot.val();
+            if (data) {
+                apps = Object.keys(data).map(key => ({
+                    id: key,
+                    name: data[key].name || 'بدون اسم',
+                    description: data[key].description || '',
+                    image: data[key].image || ''
+                }));
+            } else {
+                apps = [];
+            }
             saveAppsToLocal();
             renderApps();
             if (currentUser && currentUser.isAdmin) renderAdminApps();
             document.getElementById('totalApps').innerText = apps.length;
+            showToast('✅ تمت المزامنة', 'success');
             updateConnectionStatus(true);
-            if (showToastMsg) showToast(`✅ تمت مزامنة التطبيقات (${apps.length})`, 'success');
         })
         .catch(err => {
-            console.error('❌ Sync apps error:', err);
+            console.error('Sync apps error:', err);
+            showToast('⚠️ فشل المزامنة', 'warning', 5000);
             updateConnectionStatus(false);
-            if (showToastMsg) showToast('⚠️ فشل المزامنة، عرض البيانات المحلية', 'warning', 5000);
             loadAppsFromLocal();
         });
 }
 
 function reloadApps() {
     loadAppsFromLocal();
-    syncAppsFromFirebase(true);
+    syncApps();
 }
-function syncApps() { syncAppsFromFirebase(true); }
 
 async function addNewApp() {
     const name = document.getElementById('new_app_name').value.trim();
     const desc = document.getElementById('new_app_desc').value.trim();
     const imageUrl = document.getElementById('new_app_image').value.trim();
     if (!name) { showToast('الاسم مطلوب', 'error'); return; }
-    const newApp = { id: 'app_' + Date.now(), name, description: desc, image: imageUrl };
-    apps.push(newApp);
+    const newApp = { name, description: desc, image: imageUrl, createdAt: Date.now() };
+    
+    // إضافة محلياً
+    const tempId = 'temp_' + Date.now();
+    apps.push({ id: tempId, name, description: desc, image: imageUrl });
     saveAppsToLocal();
     renderApps();
     if (currentUser && currentUser.isAdmin) renderAdminApps();
     document.getElementById('totalApps').innerText = apps.length;
     hideAddAppForm();
     showToast('✅ تمت إضافة التطبيق محلياً', 'success');
+    
     try {
-        await db.collection('apps').doc(newApp.id).set({
-            name, description: desc, image: imageUrl,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: false });
+        await db.ref('apps').push(newApp);
         showToast('✅ تم رفع التطبيق إلى الخادم', 'success');
         updateConnectionStatus(true);
     } catch (e) {
@@ -986,6 +1097,8 @@ async function saveApp(appId) {
     const desc = document.getElementById(`edit_app_desc_${appId}`).value.trim();
     const imageUrl = document.getElementById(`edit_app_image_${appId}`).value.trim();
     if (!name) { showToast('الاسم مطلوب', 'error'); return; }
+    
+    // تحديث محلي
     const idx = apps.findIndex(a => a.id === appId);
     if (idx !== -1) {
         apps[idx].name = name;
@@ -996,11 +1109,12 @@ async function saveApp(appId) {
         if (currentUser && currentUser.isAdmin) renderAdminApps();
         showToast('✅ تم التحديث محلياً', 'success');
     }
+    
     try {
-        await db.collection('apps').doc(appId).set({
+        await db.ref(`apps/${appId}`).update({
             name, description: desc, image: imageUrl,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: false });
+            updatedAt: Date.now()
+        });
         showToast('✅ تم رفع التحديث إلى الخادم', 'success');
         updateConnectionStatus(true);
     } catch (e) {
@@ -1019,7 +1133,7 @@ async function deleteApp(appId) {
     document.getElementById('totalApps').innerText = apps.length;
     showToast('🗑 تم الحذف محلياً', 'success');
     try {
-        await db.collection('apps').doc(appId).delete();
+        await db.ref(`apps/${appId}`).remove();
         showToast('✅ تم الحذف من الخادم', 'success');
         updateConnectionStatus(true);
     } catch (e) {
@@ -1045,7 +1159,7 @@ function showAddAppForm() {
 function hideAddAppForm() { document.getElementById('addAppFormContainer').innerHTML = ''; }
 
 // ============================================================
-// دوال الوكلاء (للمدير) - Offline-First
+// دوال الوكلاء (للمدير)
 // ============================================================
 function saveAgentsToLocal() { localStorage.setItem('agentsData', JSON.stringify(agents)); }
 function loadAgentsFromLocal() {
@@ -1076,37 +1190,44 @@ function renderAgentsAdmin() {
     tbody.innerHTML = html;
 }
 
-function syncAgents(showToastMsg = true) {
-    if (showToastMsg) showToast('🔄 جاري مزامنة الوكلاء...', 'info', 3000);
-    updateConnectionStatus(false);
-    db.collection('agents').orderBy('createdAt', 'desc').get()
+function syncAgents() {
+    showToast('🔄 جاري مزامنة الوكلاء...', 'info', 3000);
+    db.ref('agents').once('value')
         .then(snapshot => {
-            const remote = [];
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                remote.push({ id: doc.id, name: d.name, email: d.email, country: d.country, city: d.city, phone: d.phone, level: d.level, status: d.status });
-            });
-            agents = remote;
+            const data = snapshot.val();
+            if (data) {
+                agents = Object.keys(data).map(key => ({
+                    id: key,
+                    name: data[key].name || '',
+                    email: data[key].email || '',
+                    country: data[key].country || '-',
+                    city: data[key].city || '-',
+                    phone: data[key].phone || '-',
+                    level: data[key].level || 'فضي',
+                    status: data[key].status || 'inactive'
+                }));
+            } else {
+                agents = [];
+            }
             saveAgentsToLocal();
             renderAgentsAdmin();
+            showToast('✅ تمت المزامنة', 'success');
             updateConnectionStatus(true);
-            if (showToastMsg) showToast(`✅ تمت مزامنة الوكلاء (${agents.length})`, 'success');
         })
         .catch(err => {
-            console.error('❌ Sync agents error:', err);
+            console.error('Sync agents error:', err);
+            showToast('⚠️ فشل المزامنة', 'warning', 5000);
             updateConnectionStatus(false);
-            if (showToastMsg) showToast('⚠️ فشل المزامنة، عرض البيانات المحلية', 'warning', 5000);
             loadAgentsFromLocal();
         });
 }
-function reloadAgents() { loadAgentsFromLocal(); syncAgents(true); }
+function reloadAgents() { loadAgentsFromLocal(); syncAgents(); }
 
 async function toggleAgentStatus(id, newStatus) {
     if (!confirm('هل أنت متأكد؟')) return;
     try {
-        await db.collection('agents').doc(id).update({ status: newStatus });
+        await db.ref(`agents/${id}/status`).set(newStatus);
         showToast(`✅ تم ${newStatus === 'active' ? 'تفعيل' : 'إلغاء تفعيل'} الوكيل`, 'success');
-        syncAgents(false);
     } catch (e) { showToast('❌ خطأ: ' + e.message, 'error'); }
 }
 async function upgradeAgent(id, currentLevel) {
@@ -1117,96 +1238,81 @@ async function upgradeAgent(id, currentLevel) {
     if (newLevel === currentLevel) { showToast('الوكيل في أعلى مستوى', 'warning'); return; }
     if (!confirm(`ترقية الوكيل إلى ${newLevel}؟`)) return;
     try {
-        await db.collection('agents').doc(id).update({ level: newLevel });
+        await db.ref(`agents/${id}/level`).set(newLevel);
         showToast(`✅ تمت الترقية إلى ${newLevel}`, 'success');
-        syncAgents(false);
     } catch (e) { showToast('❌ خطأ: ' + e.message, 'error'); }
 }
 async function deleteAgent(id) {
     if (!confirm('هل أنت متأكد من حذف هذا الوكيل؟')) return;
     try {
-        await db.collection('agents').doc(id).delete();
+        await db.ref(`agents/${id}`).remove();
         showToast('🗑 تم حذف الوكيل', 'success');
-        syncAgents(false);
     } catch (e) { showToast('❌ خطأ: ' + e.message, 'error'); }
 }
 
 // ============================================================
-// دوال العملاء للمدير (جميع العملاء) - Offline-First
+// دوال المدير للعملاء
 // ============================================================
-function saveAllClientsToLocal() { /* اختياري */ }
-function loadAllClientsFromLocal() { /* يمكن عرض بيانات سابقة لكننا نفضل المزامنة */ }
+async function deleteClientByAdmin(clientId) {
+    if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
+    try {
+        await db.ref(`clients/${clientId}`).remove();
+        showToast('🗑 تم حذف العميل', 'success');
+    } catch (e) {
+        showToast('❌ خطأ: ' + e.message, 'error');
+    }
+}
 
-function syncAllClients(showToastMsg = true) {
-    if (showToastMsg) showToast('🔄 جاري مزامنة جميع العملاء...', 'info', 3000);
-    updateConnectionStatus(false);
-    db.collection('clients').orderBy('createdAt', 'desc').get()
+function syncAllClients() {
+    showToast('🔄 جاري مزامنة جميع العملاء...', 'info', 3000);
+    db.ref('clients').once('value')
         .then(snapshot => {
+            const data = snapshot.val();
             const tbody = document.getElementById('adminClientsTable');
-            if (snapshot.empty) {
+            if (!data) {
                 tbody.innerHTML = '<tr><td colspan="5" class="empty-state">📭 لا يوجد عملاء مسجلون</td></tr>';
-                updateConnectionStatus(true);
-                if (showToastMsg) showToast('✅ لا يوجد عملاء', 'info');
                 return;
             }
             let html = '';
-            snapshot.forEach(doc => {
-                const d = doc.data();
+            Object.keys(data).forEach(key => {
+                const d = data[key];
                 const agentName = d.agentName || 'غير معروف';
                 html += `<tr>
                     <td>${d.name || '-'}</td>
                     <td>${d.country || '-'}</td>
                     <td>${d.app || '-'}</td>
                     <td>${agentName}</td>
-                    <td><button class="danger" onclick="deleteClientByAdmin('${doc.id}')">🗑 حذف</button></td>
+                    <td><button class="danger" onclick="deleteClientByAdmin('${key}')">🗑 حذف</button></td>
                 </tr>`;
             });
             tbody.innerHTML = html;
+            showToast('✅ تمت المزامنة', 'success');
             updateConnectionStatus(true);
-            if (showToastMsg) showToast(`✅ تمت مزامنة جميع العملاء (${snapshot.size})`, 'success');
         })
         .catch(err => {
-            console.error('❌ Sync all clients error:', err);
+            console.error('Sync all clients error:', err);
+            showToast('⚠️ فشل المزامنة', 'warning', 5000);
             updateConnectionStatus(false);
-            if (showToastMsg) showToast('⚠️ فشل المزامنة', 'warning', 5000);
-            document.getElementById('adminClientsTable').innerHTML = '<tr><td colspan="5">⚠️ فشل التحميل</td></tr>';
         });
-}
-
-async function deleteClientByAdmin(clientId) {
-    if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
-    // حذف من localStorage الخاص بالوكيل إذا كان موجوداً
-    clients = clients.filter(c => c.id !== clientId);
-    saveClientsToLocal();
-    renderClients();
-    document.getElementById('totalClients').innerText = clients.length;
-    try {
-        await db.collection('clients').doc(clientId).delete();
-        showToast('🗑 تم حذف العميل', 'success');
-        syncAllClients(false);
-    } catch (e) {
-        showToast('⚠️ حذف محلياً، فشل حذف من الخادم', 'warning', 5000);
-    }
 }
 
 async function updateClientAgentNames() {
     if (!confirm('سيتم تحديث أسماء الوكلاء للعملاء القديمة. هل تريد المتابعة؟')) return;
     try {
         showToast('🔄 جاري التحديث...', 'info');
-        const clientsSnap = await db.collection('clients').get();
+        const snapshot = await db.ref('clients').once('value');
+        const data = snapshot.val();
+        if (!data) { showToast('📭 لا يوجد عملاء', 'warning'); return; }
         let updated = 0;
-        for (const doc of clientsSnap.docs) {
-            const data = doc.data();
-            if (data.agentId && !data.agentName) {
-                const agentDoc = await db.collection('agents').doc(data.agentId).get();
-                if (agentDoc.exists) {
-                    await db.collection('clients').doc(doc.id).update({ agentName: agentDoc.data().name || 'غير معروف' });
-                    updated++;
-                }
+        for (const [key, client] of Object.entries(data)) {
+            if (client.agentId && !client.agentName) {
+                const agentSnap = await db.ref(`agents/${client.agentId}/name`).once('value');
+                const agentName = agentSnap.val() || 'غير معروف';
+                await db.ref(`clients/${key}/agentName`).set(agentName);
+                updated++;
             }
         }
         showToast(`✅ تم تحديث ${updated} عميل`, 'success');
-        syncAllClients(false);
     } catch (e) {
         console.error('❌ Update error:', e);
         showToast('❌ خطأ: ' + e.message, 'error', 5000);
