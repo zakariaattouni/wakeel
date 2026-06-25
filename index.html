@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 <style>
+/* ===== نفس الـ CSS السابق مع إضافة style للنافذة المنبثقة ===== */
 * { box-sizing:border-box; font-family:Tahoma,Arial,sans-serif; }
 body { margin:0; background:#eef2f7; }
 .toast-container { position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:10000; display:flex; flex-direction:column; gap:10px; align-items:center; }
@@ -78,11 +79,41 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 .connection-status { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:#e74c3c; color:white; padding:8px 20px; border-radius:30px; font-size:14px; font-weight:bold; z-index:9998; display:none; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
 .connection-status.online { background:#27ae60; display:block; }
 .connection-status.offline { background:#e74c3c; display:block; }
+
+/* ===== نافذة تغيير كلمة المرور ===== */
+.modal-overlay {
+    position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);
+    display:none; justify-content:center; align-items:center; z-index:99999;
+}
+.modal-overlay.active { display:flex; }
+.modal-box {
+    background:white; padding:30px; border-radius:16px; max-width:420px; width:90%;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+}
+.modal-box h3 { text-align:center; color:#1e4a6e; margin-top:0; }
+.modal-box input { width:100%; margin-bottom:12px; }
+.modal-box .btn-row { display:flex; gap:10px; justify-content:center; margin-top:10px; }
+.modal-box .btn-row button { flex:1; }
 </style>
 </head>
 <body>
 <div class="toast-container" id="toastContainer"></div>
 <div class="connection-status" id="connectionStatus">🔄 جاري المزامنة...</div>
+
+<!-- نافذة تغيير كلمة المرور -->
+<div class="modal-overlay" id="changePasswordModal">
+    <div class="modal-box">
+        <h3>🔑 تغيير كلمة المرور</h3>
+        <input type="password" id="oldPassword" placeholder="كلمة المرور الحالية" dir="ltr">
+        <input type="password" id="newPassword" placeholder="كلمة المرور الجديدة (6 أحرف على الأقل)" dir="ltr">
+        <input type="password" id="confirmPassword" placeholder="تأكيد كلمة المرور الجديدة" dir="ltr">
+        <div id="changePassError" style="color:red;text-align:center;font-size:14px;margin-bottom:10px;"></div>
+        <div class="btn-row">
+            <button class="primary" onclick="submitChangePassword()">تغيير</button>
+            <button class="warning" onclick="closeChangePassword()">إلغاء</button>
+        </div>
+    </div>
+</div>
 
 <a href="https://wa.me/963939436998" target="_blank" class="floating-whatsapp" title="تواصل مع الإدارة">
     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -96,6 +127,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     <div class="auth-buttons" id="authButtons"></div>
 </header>
 
+<!-- ===== صفحات الدخول والتسجيل (نفس السابق) ===== -->
 <div id="loginPage" class="page active">
     <div class="login-container">
         <h2>تسجيل الدخول</h2>
@@ -133,6 +165,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     </div>
 </div>
 
+<!-- ===== التطبيق ===== -->
 <div id="appContainer">
     <nav id="mainNav">
         <button onclick="showPage('home')">الرئيسية</button>
@@ -143,6 +176,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <button id="adminNavBtn" class="admin-btn hidden" onclick="showPage('admin')">🛠 الإدارة</button>
     </nav>
 
+    <!-- صفحة الرئيسية (تم إضافة زر تغيير كلمة المرور) -->
     <div id="home" class="page active">
         <div class="grid">
             <div class="card stat"><h2 id="totalClients">0</h2><p>عملاء مسجلون</p></div>
@@ -158,7 +192,11 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
                     <p class="profile-info"><strong>المدينة:</strong> <span id="profileCity">-</span></p>
                     <p class="profile-info"><strong>الهاتف:</strong> <span id="profilePhone">-</span></p>
                 </div>
-                <div><a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display:none;">📱 تواصل عبر واتساب</a></div>
+                <div style="display:flex; flex-direction:column; gap:8px; align-items:center;">
+                    <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display:none;">📱 تواصل عبر واتساب</a>
+                    <!-- ✅ زر تغيير كلمة المرور (يظهر للوكلاء فقط) -->
+                    <button id="changePassBtn" class="warning" onclick="openChangePassword()" style="display:none;">🔑 تغيير كلمة المرور</button>
+                </div>
             </div>
         </div>
         <div class="card">
@@ -168,6 +206,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
     </div>
 
+    <!-- باقي الصفحات (نفس السابق) -->
     <div id="clients" class="page">
         <div class="card">
             <h3>إضافة عميل جديد</h3>
@@ -254,6 +293,9 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 </div>
 
 <script>
+// ============================================================
+// 🔑 Firebase - Realtime Database (نفس السابق)
+// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyDO-l9ddik6fJb1keuHPu56tvJFKtterks",
   authDomain: "homework-6522a.firebaseapp.com",
@@ -269,6 +311,9 @@ firebase.initializeApp(firebaseConfig);
 firebase.analytics();
 const db = firebase.database();
 
+// ============================================================
+// دوال مساعدة (نفس السابق)
+// ============================================================
 function showToast(message, type = 'success', duration = 3000) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -294,6 +339,9 @@ function updateConnectionStatus(online, msg = '') {
     }
 }
 
+// ============================================================
+// PWA (نفس السابق)
+// ============================================================
 const manifestData = {
     name: "منصة الوكلاء",
     short_name: "الوكلاء",
@@ -347,6 +395,9 @@ function installPWA() {
     }
 }
 
+// ============================================================
+// المتغيرات العامة
+// ============================================================
 let currentUser = null;
 let clients = [];
 let agents = [];
@@ -356,6 +407,9 @@ let clientsListener = null;
 let agentsListener = null;
 let appsListener = null;
 
+// ============================================================
+// دوال الواجهة (تسجيل الدخول، الخروج، إلخ)
+// ============================================================
 function showLogin() {
     document.getElementById('loginPage').classList.add('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -386,6 +440,9 @@ function setLoginType(type) {
     document.getElementById('loginError').innerText = '';
 }
 
+// ============================================================
+// ✅ تسجيل وكيل جديد (Realtime Database)
+// ============================================================
 async function registerAgent() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -445,6 +502,9 @@ async function registerAgent() {
     }
 }
 
+// ============================================================
+// ✅ تسجيل الدخول (Realtime Database)
+// ============================================================
 async function loginUser() {
     const errEl = document.getElementById('loginError');
     errEl.innerText = '';
@@ -503,7 +563,8 @@ async function loginUser() {
             status: agentData.status,
             country: agentData.country || '-',
             city: agentData.city || '-',
-            phone: agentData.phone || '-'
+            phone: agentData.phone || '-',
+            password: agentData.password // نحتفظ بها للتحقق عند تغيير كلمة المرور
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         showToast('✅ تم تسجيل الدخول بنجاح', 'success');
@@ -515,6 +576,81 @@ async function loginUser() {
     }
 }
 
+// ============================================================
+// ✅ تغيير كلمة المرور (وظيفة جديدة)
+// ============================================================
+function openChangePassword() {
+    if (!currentUser || currentUser.isAdmin) {
+        showToast('هذه الميزة للوكلاء فقط', 'warning');
+        return;
+    }
+    document.getElementById('changePasswordModal').classList.add('active');
+    document.getElementById('oldPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('changePassError').innerText = '';
+}
+
+function closeChangePassword() {
+    document.getElementById('changePasswordModal').classList.remove('active');
+}
+
+async function submitChangePassword() {
+    const oldPass = document.getElementById('oldPassword').value.trim();
+    const newPass = document.getElementById('newPassword').value.trim();
+    const confirmPass = document.getElementById('confirmPassword').value.trim();
+    const errEl = document.getElementById('changePassError');
+
+    // التحقق من صحة المدخلات
+    if (!oldPass || !newPass || !confirmPass) {
+        errEl.innerText = 'جميع الحقول مطلوبة';
+        return;
+    }
+    if (oldPass !== currentUser.password) {
+        errEl.innerText = 'كلمة المرور الحالية غير صحيحة';
+        return;
+    }
+    if (newPass.length < 6) {
+        errEl.innerText = 'كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل';
+        return;
+    }
+    if (newPass !== confirmPass) {
+        errEl.innerText = 'كلمة المرور الجديدة غير مطابقة للتأكيد';
+        return;
+    }
+    if (newPass === oldPass) {
+        errEl.innerText = 'كلمة المرور الجديدة يجب أن تختلف عن الحالية';
+        return;
+    }
+
+    errEl.innerText = '';
+    const btn = document.querySelector('#changePasswordModal .primary');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading"></span> جاري التحديث...';
+
+    try {
+        // تحديث في Realtime Database
+        await db.ref(`agents/${currentUser.id}/password`).set(newPass);
+
+        // تحديث في localStorage
+        currentUser.password = newPass;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+        showToast('✅ تم تغيير كلمة المرور بنجاح', 'success');
+        closeChangePassword();
+    } catch (e) {
+        console.error('❌ Change password error:', e);
+        errEl.innerText = 'فشل التحديث: ' + e.message;
+        showToast('❌ فشل تغيير كلمة المرور', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'تغيير';
+    }
+}
+
+// ============================================================
+// الدخول للتطبيق (مع إظهار زر تغيير كلمة المرور للوكلاء)
+// ============================================================
 function enterApp() {
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -528,8 +664,10 @@ function enterApp() {
     const adminBtn = document.getElementById('adminNavBtn');
     if (currentUser.isAdmin) {
         adminBtn.classList.remove('hidden');
+        document.getElementById('changePassBtn').style.display = 'none'; // المدير لا يحتاج تغيير كلمة مرور (ثابتة)
     } else {
         adminBtn.classList.add('hidden');
+        document.getElementById('changePassBtn').style.display = 'inline-block'; // الوكيل يرى الزر
         if (document.getElementById('admin').classList.contains('active')) showPage('home');
     }
 
@@ -548,6 +686,9 @@ function enterApp() {
     showPage('home');
 }
 
+// ============================================================
+// باقي الدوال (نفس السابق تماماً)
+// ============================================================
 function updateProfileUI() {
     document.getElementById('profileName').innerText = currentUser.name || '-';
     document.getElementById('profileCountry').innerText = currentUser.country || '-';
@@ -589,10 +730,11 @@ function checkSession() {
                 db.ref('agents').orderByChild('email').equalTo(user.email).once('value').then(snap => {
                     if (snap.exists()) {
                         let data = null;
-                        snap.forEach(child => { data = child.val(); });
+                        let id = null;
+                        snap.forEach(child => { id = child.key; data = child.val(); });
                         if (data.status === 'active') {
                             currentUser = {
-                                id: Object.keys(snap.val())[0],
+                                id: id,
                                 email: data.email,
                                 name: data.name,
                                 level: data.level || 'فضي',
@@ -600,7 +742,8 @@ function checkSession() {
                                 status: data.status,
                                 country: data.country || '-',
                                 city: data.city || '-',
-                                phone: data.phone || '-'
+                                phone: data.phone || '-',
+                                password: data.password
                             };
                             localStorage.setItem('currentUser', JSON.stringify(currentUser));
                             enterApp();
@@ -634,6 +777,9 @@ function copyText(id) {
     showToast('📋 تم نسخ النص', 'success');
 }
 
+// ============================================================
+// دوال Realtime Database (نفس السابق)
+// ============================================================
 function listenToRealtimeChanges() {
     if (appsListener) appsListener.off();
     appsListener = db.ref('apps');
@@ -1170,6 +1316,9 @@ async function updateClientAgentNames() {
     }
 }
 
+// ============================================================
+// بدء التطبيق
+// ============================================================
 setLoginType('agent');
 checkSession();
 </script>
