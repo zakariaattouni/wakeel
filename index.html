@@ -275,7 +275,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     <div id="home" class="page active">
         <div class="grid">
             <div class="card stat"><h2 id="totalClients">0</h2><p>عملاء مسجلون</p></div>
-            <div class="card stat"><h2 id="totalApps">4</h2><p>التطبيقات المتاحة</p></div>
+            <div class="card stat"><h2 id="totalApps">0</h2><p>التطبيقات المتاحة</p></div>
             <div class="card stat"><h2 id="userLevel">فضي</h2><p>مستوى الوكيل</p></div>
         </div>
         <div class="card" id="agentProfileCard">
@@ -346,6 +346,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
         <div class="card">
             <h3>📱 إدارة التطبيقات</h3>
+            <button class="warning" onclick="resetDefaultApps()" style="margin-bottom:15px;">🔄 إعادة إنشاء التطبيقات الافتراضية</button>
             <div id="adminAppsContainer"></div>
         </div>
     </div>
@@ -389,8 +390,8 @@ document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob
 const swCode = `
 self.addEventListener('install', e => {
     self.skipWaiting();
-});
-self.addEventListener('activate', e => {    e.waitUntil(clients.claim());
+});self.addEventListener('activate', e => {
+    e.waitUntil(clients.claim());
 });
 self.addEventListener('fetch', e => {
     e.respondWith(
@@ -438,8 +439,8 @@ const firebaseConfig = {
   projectId: "wakeel-5a1d2",
   storageBucket: "wakeel-5a1d2.firebasestorage.app",
   messagingSenderId: "864756617884",
-  appId: "1:864756617884:web:962059064beebfce635359",
-  measurementId: "G-Z33WVNW5Z6"};
+  appId: "1:864756617884:web:962059064beebfce635359",  measurementId: "G-Z33WVNW5Z6"
+};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 console.log('✅ Firebase initialized successfully');
@@ -469,7 +470,7 @@ let apps = [];
 let loginType = 'agent';
 let clientsListener = false;
 let agentsListener = false;
-let appsListener = false;
+let appsListener = null; // ✅ تم تغييرها لمتابعة المستمع
 
 // ============================================================
 // دوال الواجهة
@@ -487,8 +488,8 @@ function showRegister() {
 function setLoginType(type) {
     loginType = type;
     const agentBtn = document.getElementById('loginTypeAgent');
-    const adminBtn = document.getElementById('loginTypeAdmin');
-    const emailField = document.getElementById('loginEmail');    const fieldsDiv = document.getElementById('loginFields');
+    const adminBtn = document.getElementById('loginTypeAdmin');    const emailField = document.getElementById('loginEmail');
+    const fieldsDiv = document.getElementById('loginFields');
     if (type === 'agent') {
         agentBtn.classList.add('active');
         adminBtn.classList.remove('active');
@@ -536,8 +537,8 @@ async function registerAgent() {
             btn.disabled = false;
             btn.innerHTML = 'تسجيل';
             return;
-        }
-        await db.collection('agents').add({            name, email, password, country, city, phone,
+        }        await db.collection('agents').add({
+            name, email, password, country, city, phone,
             level: 'فضي',
             status: 'inactive',
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -556,6 +557,7 @@ async function registerAgent() {
             btn.innerHTML = 'تسجيل';
         }, 2000);
     } catch (e) {
+        console.error('❌ Register error:', e);
         errEl.innerText = 'حدث خطأ: ' + e.message;
         showToast('❌ حدث خطأ في التسجيل: ' + e.message, 'error', 5000);
         btn.disabled = false;
@@ -584,9 +586,9 @@ async function loginUser() {
             };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             showToast('✅ تم تسجيل دخول المدير بنجاح', 'success');
-            enterApp();
-        } else {
-            errEl.innerText = 'كلمة مرور المدير غير صحيحة';            showToast('❌ كلمة المرور غير صحيحة', 'error');
+            enterApp();        } else {
+            errEl.innerText = 'كلمة مرور المدير غير صحيحة';
+            showToast('❌ كلمة المرور غير صحيحة', 'error');
         }
         return;
     }
@@ -631,10 +633,11 @@ async function loginUser() {
         showToast('✅ تم تسجيل الدخول بنجاح', 'success');
         enterApp();
     } catch (e) {
+        console.error('❌ Login error:', e);
         errEl.innerText = 'خطأ في الاتصال: ' + e.message;
-        showToast('❌ خطأ في الاتصال: ' + e.message, 'error', 5000);
-    }
+        showToast('❌ خطأ في الاتصال: ' + e.message, 'error', 5000);    }
 }
+
 // ============================================================
 // الدخول للتطبيق
 // ============================================================
@@ -669,10 +672,10 @@ function enterApp() {
         listenAgents();
         agentsListener = true;
     }
-    if (!appsListener) {
-        listenApps();
-        appsListener = true;
-    }
+    
+    // ✅ بدء الاستماع للتطبيقات
+    listenApps();
+    
     showPage('home');
 }
 
@@ -681,10 +684,10 @@ function updateProfileUI() {
     document.getElementById('profileCountry').innerText = currentUser.country || '-';
     document.getElementById('profileCity').innerText = currentUser.city || '-';
     document.getElementById('profilePhone').innerText = currentUser.phone || '-';
-    const whatsappLink = document.getElementById('whatsappLink');
-    const phone = currentUser.phone || '';
+    const whatsappLink = document.getElementById('whatsappLink');    const phone = currentUser.phone || '';
     let cleanPhone = phone.replace(/\s/g, '').replace(/[^0-9+]/g, '');
-    if (cleanPhone) {        whatsappLink.href = `https://wa.me/${cleanPhone}`;
+    if (cleanPhone) {
+        whatsappLink.href = `https://wa.me/${cleanPhone}`;
         whatsappLink.style.display = 'inline-flex';
     } else {
         whatsappLink.style.display = 'none';
@@ -730,10 +733,10 @@ function checkSession() {
                                 isAdmin: false,
                                 status: data.status,
                                 country: data.country || '-',
-                                city: data.city || '-',
-                                phone: data.phone || '-'
+                                city: data.city || '-',                                phone: data.phone || '-'
                             };
-                            localStorage.setItem('currentUser', JSON.stringify(currentUser));                            enterApp();
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                            enterApp();
                         } else {
                             localStorage.removeItem('currentUser');
                             showLogin();
@@ -779,10 +782,10 @@ async function addClient() {
         showToast('أدخل اسم العميل', 'error'); 
         return; 
     }
-    const btn = document.getElementById('addClientBtn');
-    btn.disabled = true;
+    const btn = document.getElementById('addClientBtn');    btn.disabled = true;
     btn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
-    const country = document.getElementById('clientCountry').value.trim();    const contact = document.getElementById('clientContact').value.trim();
+    const country = document.getElementById('clientCountry').value.trim();
+    const contact = document.getElementById('clientContact').value.trim();
     const app = document.getElementById('clientApp').value;
     try {
         await db.collection('clients').add({
@@ -795,6 +798,7 @@ async function addClient() {
         document.getElementById('clientContact').value = '';
         showToast('✅ تم إضافة العميل بنجاح', 'success');
     } catch (e) { 
+        console.error('❌ Add client error:', e);
         showToast('❌ خطأ في الإضافة: ' + e.message, 'error', 5000); 
     } finally {
         btn.disabled = false;
@@ -813,6 +817,7 @@ function listenClients() {
             });
             renderClients();
         }, err => {
+            console.error('❌ Listen clients error:', err);
             document.getElementById('clientTable').innerHTML = '<tr><td colspan="3">⚠️ خطأ في التحميل</td></tr>';
         });
 }
@@ -826,48 +831,125 @@ function renderClients() {
 }
 
 // ============================================================
-// دوال التطبيقات
-// ============================================================
+// ✅ دوال التطبيقات - محسّنة وموثوقة// ============================================================
 const defaultApps = [
     { id: 'app1', name: 'مدرب التشخيص السني', description: 'تطبيق تدريبي لتطوير مهارات التشخيص السني.', image: '' },
     { id: 'app2', name: 'QuizDent', description: 'اختبارات ومراجعات لطلاب طب الأسنان.', image: '' },
-    { id: 'app3', name: 'بصمة AI', description: 'مساعد ذكي للمحتوى والمهام.', image: '' },    { id: 'app4', name: 'الدليل', description: 'مرجع شامل للمعلومات المهنية.', image: '' }
+    { id: 'app3', name: 'بصمة AI', description: 'مساعد ذكي للمحتوى والمهام.', image: '' },
+    { id: 'app4', name: 'الدليل', description: 'مرجع شامل للمعلومات المهنية.', image: '' }
 ];
+
+// ✅ إنشاء التطبيقات الافتراضية - محسّن
 async function initDefaultApps() {
     try {
+        console.log('🔍 Checking for default apps...');
         const snapshot = await db.collection('apps').get();
+        
         if (snapshot.empty) {
+            console.log('📦 No apps found, creating defaults...');
             for (const app of defaultApps) {
-                await db.collection('apps').doc(app.id).set(app);
+                try {
+                    await db.collection('apps').doc(app.id).set({
+                        name: app.name,
+                        description: app.description,
+                        image: app.image,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log(`✅ Created app: ${app.name}`);
+                } catch (err) {
+                    console.error(`❌ Failed to create ${app.name}:`, err);
+                }
             }
             showToast('✅ تم إنشاء التطبيقات الافتراضية', 'success');
+        } else {
+            console.log(`✅ Found ${snapshot.size} apps in database`);
         }
     } catch (e) {
-        console.warn('⚠️ Cannot create default apps:', e);
+        console.error('❌ Init default apps error:', e);
+        showToast('⚠️ خطأ في التحقق من التطبيقات: ' + e.message, 'warning', 5000);
     }
 }
+
+// ✅ إعادة إنشاء التطبيقات الافتراضية (للمدير)
+async function resetDefaultApps() {
+    if (!confirm('هل أنت متأكد من إعادة إنشاء التطبيقات الافتراضية؟\nسيتم إضافة التطبيقات المفقودة فقط.')) return;
+    
+    try {
+        showToast('🔄 جاري التحقق من التطبيقات...', 'info');
+        
+        const snapshot = await db.collection('apps').get();
+        const existingIds = new Set(snapshot.docs.map(doc => doc.id));
+        
+        let created = 0;        for (const app of defaultApps) {
+            if (!existingIds.has(app.id)) {
+                await db.collection('apps').doc(app.id).set({
+                    name: app.name,
+                    description: app.description,
+                    image: app.image,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                created++;
+                console.log(`✅ Recreated: ${app.name}`);
+            }
+        }
+        
+        if (created > 0) {
+            showToast(`✅ تم إنشاء ${created} تطبيق مفقود`, 'success');
+        } else {
+            showToast('✅ جميع التطبيقات موجودة بالفعل', 'success');
+        }
+    } catch (e) {
+        console.error('❌ Reset apps error:', e);
+        showToast('❌ خطأ في إعادة إنشاء التطبيقات: ' + e.message, 'error', 5000);
+    }
+}
+
+// ✅ الاستماع للتطبيقات - محسّن مع تتبع الأخطاء
 function listenApps() {
-    db.collection('apps')
+    if (appsListener) {
+        console.log('⚠️ Apps listener already active');
+        return;
+    }
+    
+    console.log('👂 Starting apps listener...');
+    
+    appsListener = db.collection('apps')
         .orderBy('name')
         .onSnapshot(snap => {
+            console.log(`📱 Apps snapshot received: ${snap.size} apps`);
             apps = [];
             snap.forEach(doc => {
                 const d = doc.data();
-                apps.push({ id: doc.id, ...d });
+                apps.push({ 
+                    id: doc.id, 
+                    name: d.name || 'بدون اسم',
+                    description: d.description || '',
+                    image: d.image || ''
+                });
             });
-            renderApps();
+            
+            console.log('✅ Apps loaded:', apps.map(a => a.name));
+                        renderApps();
             if (currentUser && currentUser.isAdmin) {
                 renderAdminApps();
             }
             document.getElementById('totalApps').innerText = apps.length;
         }, err => {
-            document.getElementById('appsContainer').innerHTML = '<p style="color:red;">⚠️ خطأ في تحميل التطبيقات</p>';
+            console.error('❌ Apps listener error:', err);
+            document.getElementById('appsContainer').innerHTML = `
+                <div class="card" style="text-align:center; color:#e74c3c;">
+                    <h3>⚠️ خطأ في تحميل التطبيقات</h3>
+                    <p>${err.message}</p>
+                    <button class="primary" onclick="listenApps()">🔄 إعادة المحاولة</button>
+                </div>
+            `;
         });
 }
+
 function renderApps() {
     const container = document.getElementById('appsContainer');
     if (apps.length === 0) {
-        container.innerHTML = '<p>لا توجد تطبيقات حالياً.</p>';
+        container.innerHTML = '<div class="card"><p style="text-align:center;">لا توجد تطبيقات حالياً.</p></div>';
         return;
     }
     let html = '';
@@ -880,9 +962,11 @@ function renderApps() {
                     <p>${app.description || ''}</p>
                 </div>
             </div>
-        `;    });
+        `;
+    });
     container.innerHTML = html;
 }
+
 function renderAdminApps() {
     const container = document.getElementById('adminAppsContainer');
     if (!currentUser || !currentUser.isAdmin) {
@@ -894,8 +978,7 @@ function renderAdminApps() {
         return;
     }
     let html = '';
-    apps.forEach(app => {
-        html += `
+    apps.forEach(app => {        html += `
             <div class="card admin-app-edit">
                 <h4>${app.name}</h4>
                 <div>
@@ -920,6 +1003,7 @@ function renderAdminApps() {
         `;
     });
     container.innerHTML = html;
+    
     apps.forEach(app => {
         const urlInput = document.getElementById(`edit_app_image_${app.id}`);
         if (urlInput) {
@@ -929,38 +1013,53 @@ function renderAdminApps() {
                 if (url) {
                     preview.innerHTML = `<img src="${url}" class="preview-img" onerror="this.style.display='none'">`;
                 } else {
-                    preview.innerHTML = '';                }
+                    preview.innerHTML = '';
+                }
             });
         }
     });
 }
+
+// ✅ حفظ التطبيق - محسّن مع تتبع الأخطاء
 async function saveApp(appId) {
     const name = document.getElementById(`edit_app_name_${appId}`).value.trim();
     const desc = document.getElementById(`edit_app_desc_${appId}`).value.trim();
     const imageUrl = document.getElementById(`edit_app_image_${appId}`).value.trim();
+    
     if (!name) {
-        showToast('الاسم مطلوب', 'error');
-        return;
+        showToast('الاسم مطلوب', 'error');        return;
     }
+    
     try {
+        console.log(`💾 Saving app ${appId}: ${name}`);
+        
         await db.collection('apps').doc(appId).set({
-            name,
+            name: name,
             description: desc,
             image: imageUrl,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
+        
+        console.log(`✅ App saved successfully: ${appId}`);
         showToast('✅ تم حفظ التطبيق بنجاح', 'success');
     } catch (e) {
+        console.error(`❌ Save app ${appId} error:`, e);
         showToast('❌ حدث خطأ أثناء الحفظ: ' + e.message, 'error', 5000);
     }
 }
+
+// ✅ حذف التطبيق - محسّن
 async function deleteApp(appId) {
     if (!confirm('هل أنت متأكد من حذف هذا التطبيق نهائياً؟')) return;
+    
     try {
+        console.log(`🗑 Deleting app: ${appId}`);
         await db.collection('apps').doc(appId).delete();
+        console.log(`✅ App deleted: ${appId}`);
         showToast('🗑 تم حذف التطبيق', 'success');
     } catch (e) {
-        showToast('❌ خطأ في الحذف', 'error');
+        console.error(`❌ Delete app ${appId} error:`, e);
+        showToast('❌ خطأ في الحذف: ' + e.message, 'error', 5000);
     }
 }
 
@@ -977,8 +1076,8 @@ function listenAgents() {
             snap.forEach(doc => {
                 const d = doc.data();
                 agents.push({
-                    id: doc.id,
-                    name: d.name || '',                    email: d.email || '',
+                    id: doc.id,                    name: d.name || '',
+                    email: d.email || '',
                     country: d.country || '-',
                     city: d.city || '-',
                     phone: d.phone || '-',
@@ -988,6 +1087,7 @@ function listenAgents() {
             });
             renderAgentsAdmin();
         }, err => {
+            console.error('❌ Listen agents error:', err);
             document.getElementById('adminAgentsTable').innerHTML = '<tr><td colspan="8">⚠️ خطأ في تحميل الوكلاء</td></tr>';
         });
 }
@@ -1019,15 +1119,16 @@ async function toggleAgentStatus(id, newStatus) {
         await db.collection('agents').doc(id).update({ status: newStatus });
         showToast(`✅ تم ${newStatus === 'active' ? 'تفعيل' : 'إلغاء تفعيل'} الوكيل`, 'success');
     } catch (e) { 
+        console.error('❌ Toggle status error:', e);
         showToast('❌ خطأ في التحديث', 'error'); 
     }
 }
 async function upgradeAgent(id, currentLevel) {
     const levels = ['فضي', 'ذهبي', 'بلاتيني'];
-    let idx = levels.indexOf(currentLevel);
-    if (idx === -1) idx = 0;
+    let idx = levels.indexOf(currentLevel);    if (idx === -1) idx = 0;
     const newLevel = levels[(idx + 1) % levels.length];
-    if (newLevel === currentLevel) {        showToast('الوكيل في أعلى مستوى', 'warning');
+    if (newLevel === currentLevel) {
+        showToast('الوكيل في أعلى مستوى', 'warning');
         return;
     }
     if (!confirm(`ترقية الوكيل إلى مستوى ${newLevel}؟`)) return;
@@ -1035,6 +1136,7 @@ async function upgradeAgent(id, currentLevel) {
         await db.collection('agents').doc(id).update({ level: newLevel });
         showToast(`✅ تمت الترقية إلى ${newLevel}`, 'success');
     } catch (e) { 
+        console.error('❌ Upgrade error:', e);
         showToast('❌ خطأ في الترقية', 'error'); 
     }
 }
@@ -1044,6 +1146,7 @@ async function deleteAgent(id) {
         await db.collection('agents').doc(id).delete();
         showToast('🗑 تم حذف الوكيل', 'success');
     } catch (e) { 
+        console.error('❌ Delete agent error:', e);
         showToast('❌ خطأ في الحذف', 'error'); 
     }
 }
@@ -1052,6 +1155,7 @@ async function deleteAgent(id) {
 // بدء التطبيق
 // ============================================================
 initDefaultApps().then(() => {
+    console.log('✅ Default apps initialized');
     setLoginType('agent');
     checkSession();
 });
