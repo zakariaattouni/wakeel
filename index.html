@@ -129,7 +129,6 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 }
 @keyframes spin { to { transform:rotate(360deg); } }
 
-/* ✅ زر واتساب العائم للإدارة */
 .floating-whatsapp {
     position:fixed;
     bottom:25px;
@@ -145,8 +144,8 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     z-index:9999;
     text-decoration:none;
     transition:transform 0.3s;
-    animation:pulse 2s infinite;}
-.floating-whatsapp:hover { transform:scale(1.1); }
+    animation:pulse 2s infinite;
+}.floating-whatsapp:hover { transform:scale(1.1); }
 .floating-whatsapp svg { width:32px; height:32px; fill:white; }
 @keyframes pulse {
     0% { box-shadow:0 0 0 0 rgba(37,211,102,0.7); }
@@ -170,7 +169,6 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 }
 .floating-whatsapp:hover .tooltip { opacity:1; }
 
-/* ✅ زر تثبيت التطبيق العائم */
 .floating-install {
     position:fixed;
     bottom:25px;
@@ -194,18 +192,23 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
 @keyframes slideUp {
     from { transform:translateY(100px); opacity:0; }
     to { transform:translateY(0); opacity:1; }
-}</style>
+}
+
+.admin-actions-bar {    display:flex;
+    gap:10px;
+    margin-bottom:15px;
+    flex-wrap:wrap;
+}
+</style>
 </head>
 <body>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ✅ زر واتساب العائم للتواصل مع الإدارة -->
 <a href="https://wa.me/963939436998" target="_blank" class="floating-whatsapp" title="تواصل مع الإدارة">
     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     <span class="tooltip">تواصل مع الإدارة</span>
 </a>
 
-<!-- ✅ زر تثبيت التطبيق العائم -->
 <button class="floating-install" id="installBtn" onclick="installPWA()">
     📲 تثبيت التطبيق
 </button>
@@ -235,14 +238,13 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
         <div id="loginError" style="color:red;text-align:center;margin-top:10px;"></div>
         
-        <!-- ✅ زر واتساب الإدارة في صفحة الدخول -->
         <div style="margin-top:20px; text-align:center;">
             <a href="https://wa.me/963939436998" target="_blank" class="whatsapp-btn">
                 📱 تواصل مع الإدارة عبر واتساب
             </a>
         </div>
-    </div>
-</div>
+    </div></div>
+
 <div id="registerPage" class="page">
     <div class="login-container">
         <h2>تسجيل وكيل جديد</h2>
@@ -290,9 +292,9 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
                 <div>
                     <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display:none;">📱 تواصل عبر واتساب</a>
                 </div>
-            </div>
-        </div>
-        <div class="card">            <h3>رابط الوكيل</h3>
+            </div>        </div>
+        <div class="card">
+            <h3>رابط الوكيل</h3>
             <input id="agentLink" value="https://yourdomain.com/?agent=zak001">
             <button class="primary copyBtn" onclick="copyAgentLink()">نسخ الرابط</button>
         </div>
@@ -339,23 +341,25 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         <div class="card">
             <h3>👥 إدارة الوكلاء</h3>
             <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr><th>الاسم</th><th>البريد</th><th>الدولة</th><th>المدينة</th><th>الهاتف</th><th>المستوى</th><th>الحالة</th><th>إجراءات</th></tr></thead>
-                    <tbody id="adminAgentsTable"></tbody>                </table>
+                <table>                    <thead><tr><th>الاسم</th><th>البريد</th><th>الدولة</th><th>المدينة</th><th>الهاتف</th><th>المستوى</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                    <tbody id="adminAgentsTable"></tbody>
+                </table>
             </div>
         </div>
         <div class="card">
             <h3>📱 إدارة التطبيقات</h3>
-            <button class="warning" onclick="resetDefaultApps()" style="margin-bottom:15px;">🔄 إعادة إنشاء التطبيقات الافتراضية</button>
+            <div class="admin-actions-bar">
+                <button class="success" onclick="showAddAppForm()">➕ إضافة تطبيق جديد</button>
+                <button class="warning" onclick="restoreAppsFromBackup()">🔄 استعادة من النسخة الاحتياطية</button>
+                <button class="warning" onclick="resetDefaultApps()">🔄 إعادة إنشاء الافتراضية</button>
+            </div>
+            <div id="addAppFormContainer"></div>
             <div id="adminAppsContainer"></div>
         </div>
     </div>
 </div>
 
 <script>
-// ============================================================
-// ✅ PWA: Manifest + Service Worker
-// ============================================================
 const manifestData = {
     name: "منصة الوكلاء",
     short_name: "الوكلاء",
@@ -386,11 +390,10 @@ const manifestData = {
 const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
 document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
 
-// Service Worker للتشغيل أوفلاين
-const swCode = `
-self.addEventListener('install', e => {
+const swCode = `self.addEventListener('install', e => {
     self.skipWaiting();
-});self.addEventListener('activate', e => {
+});
+self.addEventListener('activate', e => {
     e.waitUntil(clients.claim());
 });
 self.addEventListener('fetch', e => {
@@ -407,7 +410,6 @@ if ('serviceWorker' in navigator) {
     } catch(e) { console.log('SW error:', e); }
 }
 
-// زر تثبيت التطبيق
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -429,9 +431,6 @@ function installPWA() {
     }
 }
 
-// ============================================================
-// 🔑 إعدادات Firebase الصحيحة
-// ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyBrGIP_gEAu2O6gMcGfUZ741jwVsjjO1ps",
   authDomain: "wakeel-5a1d2.firebaseapp.com",
@@ -439,15 +438,12 @@ const firebaseConfig = {
   projectId: "wakeel-5a1d2",
   storageBucket: "wakeel-5a1d2.firebasestorage.app",
   messagingSenderId: "864756617884",
-  appId: "1:864756617884:web:962059064beebfce635359",  measurementId: "G-Z33WVNW5Z6"
-};
+  appId: "1:864756617884:web:962059064beebfce635359",
+  measurementId: "G-Z33WVNW5Z6"};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 console.log('✅ Firebase initialized successfully');
 
-// ============================================================
-// نظام الإشعارات
-// ============================================================
 function showToast(message, type = 'success', duration = 3000) {
     const container = document.getElementById('toastContainer');
     const toast = document.createElement('div');
@@ -460,9 +456,6 @@ function showToast(message, type = 'success', duration = 3000) {
     }, duration);
 }
 
-// ============================================================
-// المتغيرات
-// ============================================================
 let currentUser = null;
 let clients = [];
 let agents = [];
@@ -470,11 +463,8 @@ let apps = [];
 let loginType = 'agent';
 let clientsListener = false;
 let agentsListener = false;
-let appsListener = null; // ✅ تم تغييرها لمتابعة المستمع
+let appsListener = null;
 
-// ============================================================
-// دوال الواجهة
-// ============================================================
 function showLogin() {
     document.getElementById('loginPage').classList.add('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -488,7 +478,8 @@ function showRegister() {
 function setLoginType(type) {
     loginType = type;
     const agentBtn = document.getElementById('loginTypeAgent');
-    const adminBtn = document.getElementById('loginTypeAdmin');    const emailField = document.getElementById('loginEmail');
+    const adminBtn = document.getElementById('loginTypeAdmin');
+    const emailField = document.getElementById('loginEmail');
     const fieldsDiv = document.getElementById('loginFields');
     if (type === 'agent') {
         agentBtn.classList.add('active');
@@ -497,16 +488,12 @@ function setLoginType(type) {
         fieldsDiv.querySelector('input:first-child').placeholder = 'البريد الإلكتروني';
     } else {
         adminBtn.classList.add('active');
-        agentBtn.classList.remove('active');
-        emailField.classList.add('hidden');
+        agentBtn.classList.remove('active');        emailField.classList.add('hidden');
         fieldsDiv.querySelector('input:first-child').placeholder = 'كلمة المرور (للمدير)';
     }
     document.getElementById('loginError').innerText = '';
 }
 
-// ============================================================
-// تسجيل وكيل جديد
-// ============================================================
 async function registerAgent() {
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
@@ -537,7 +524,8 @@ async function registerAgent() {
             btn.disabled = false;
             btn.innerHTML = 'تسجيل';
             return;
-        }        await db.collection('agents').add({
+        }
+        await db.collection('agents').add({
             name, email, password, country, city, phone,
             level: 'فضي',
             status: 'inactive',
@@ -549,8 +537,7 @@ async function registerAgent() {
         document.getElementById('regPassword').value = '';
         document.getElementById('regCountry').value = '';
         document.getElementById('regCity').value = '';
-        document.getElementById('regPhone').value = '';
-        errEl.innerText = '';
+        document.getElementById('regPhone').value = '';        errEl.innerText = '';
         setTimeout(() => {
             showLogin();
             btn.disabled = false;
@@ -565,9 +552,6 @@ async function registerAgent() {
     }
 }
 
-// ============================================================
-// تسجيل الدخول
-// ============================================================
 async function loginUser() {
     const errEl = document.getElementById('loginError');
     errEl.innerText = '';
@@ -586,7 +570,8 @@ async function loginUser() {
             };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
             showToast('✅ تم تسجيل دخول المدير بنجاح', 'success');
-            enterApp();        } else {
+            enterApp();
+        } else {
             errEl.innerText = 'كلمة مرور المدير غير صحيحة';
             showToast('❌ كلمة المرور غير صحيحة', 'error');
         }
@@ -601,8 +586,7 @@ async function loginUser() {
     }
     try {
         const snapshot = await db.collection('agents').where('email', '==', email).get();
-        if (snapshot.empty) {
-            errEl.innerText = 'البريد غير مسجل';
+        if (snapshot.empty) {            errEl.innerText = 'البريد غير مسجل';
             showToast('❌ البريد غير مسجل', 'error');
             return;
         }
@@ -635,12 +619,10 @@ async function loginUser() {
     } catch (e) {
         console.error('❌ Login error:', e);
         errEl.innerText = 'خطأ في الاتصال: ' + e.message;
-        showToast('❌ خطأ في الاتصال: ' + e.message, 'error', 5000);    }
+        showToast('❌ خطأ في الاتصال: ' + e.message, 'error', 5000);
+    }
 }
 
-// ============================================================
-// الدخول للتطبيق
-// ============================================================
 function enterApp() {
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -653,8 +635,7 @@ function enterApp() {
     
     const adminBtn = document.getElementById('adminNavBtn');
     if (currentUser.isAdmin) {
-        adminBtn.classList.remove('hidden');
-    } else {
+        adminBtn.classList.remove('hidden');    } else {
         adminBtn.classList.add('hidden');
         if (document.getElementById('admin').classList.contains('active')) {
             showPage('home');
@@ -673,7 +654,6 @@ function enterApp() {
         agentsListener = true;
     }
     
-    // ✅ بدء الاستماع للتطبيقات
     listenApps();
     
     showPage('home');
@@ -684,7 +664,8 @@ function updateProfileUI() {
     document.getElementById('profileCountry').innerText = currentUser.country || '-';
     document.getElementById('profileCity').innerText = currentUser.city || '-';
     document.getElementById('profilePhone').innerText = currentUser.phone || '-';
-    const whatsappLink = document.getElementById('whatsappLink');    const phone = currentUser.phone || '';
+    const whatsappLink = document.getElementById('whatsappLink');
+    const phone = currentUser.phone || '';
     let cleanPhone = phone.replace(/\s/g, '').replace(/[^0-9+]/g, '');
     if (cleanPhone) {
         whatsappLink.href = `https://wa.me/${cleanPhone}`;
@@ -694,7 +675,6 @@ function updateProfileUI() {
     }
 }
 
-// ✅ تسجيل الخروج - فقط عند الضغط على الزر
 function logout() {
     if (!confirm('هل أنت متأكد من تسجيل الخروج؟')) return;
     currentUser = null;
@@ -704,22 +684,18 @@ function logout() {
     document.getElementById('loginPage').classList.add('active');
     document.getElementById('loginError').innerText = '';
     setLoginType('agent');
-    showToast('👋 تم تسجيل الخروج', 'success');
-}
+    showToast('👋 تم تسجيل الخروج', 'success');}
 
-// ✅ الجلسة مستمرة - تحقق عند فتح الصفحة
 function checkSession() {
     const stored = localStorage.getItem('currentUser');
     if (stored) {
         try {
             const user = JSON.parse(stored);
-            // المدير - جلسة مباشرة
             if (user.isAdmin && user.email === 'admin@system.com') {
                 currentUser = user;
                 enterApp();
                 return;
             }
-            // الوكيل - تحقق من الحالة
             if (!user.isAdmin && user.email) {
                 db.collection('agents').where('email', '==', user.email).get().then(snap => {
                     if (!snap.empty) {
@@ -733,7 +709,8 @@ function checkSession() {
                                 isAdmin: false,
                                 status: data.status,
                                 country: data.country || '-',
-                                city: data.city || '-',                                phone: data.phone || '-'
+                                city: data.city || '-',
+                                phone: data.phone || '-'
                             };
                             localStorage.setItem('currentUser', JSON.stringify(currentUser));
                             enterApp();
@@ -747,7 +724,6 @@ function checkSession() {
                         showLogin();
                     }
                 }).catch(() => {
-                    // في حالة عدم الاتصال - استخدام الجلسة المخزنة
                     currentUser = user;
                     enterApp();
                 });
@@ -757,8 +733,7 @@ function checkSession() {
             localStorage.removeItem('currentUser');
         }
     }
-    showLogin();
-}
+    showLogin();}
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -773,16 +748,14 @@ function copyText(id) {
     showToast('📋 تم نسخ النص', 'success');
 }
 
-// ============================================================
-// دوال العملاء
-// ============================================================
 async function addClient() {
     const name = document.getElementById('clientName').value.trim();
     if (!name) { 
         showToast('أدخل اسم العميل', 'error'); 
         return; 
     }
-    const btn = document.getElementById('addClientBtn');    btn.disabled = true;
+    const btn = document.getElementById('addClientBtn');
+    btn.disabled = true;
     btn.innerHTML = '<span class="loading"></span> جاري الإضافة...';
     const country = document.getElementById('clientCountry').value.trim();
     const contact = document.getElementById('clientContact').value.trim();
@@ -809,8 +782,7 @@ function listenClients() {
     db.collection('clients')
         .where('agentEmail', '==', currentUser.email)
         .orderBy('createdAt', 'desc')
-        .onSnapshot(snap => {
-            clients = [];
+        .onSnapshot(snap => {            clients = [];
             snap.forEach(doc => {
                 const d = doc.data();
                 clients.push({ id: doc.id, name: d.name, country: d.country, app: d.app });
@@ -830,8 +802,7 @@ function renderClients() {
     document.getElementById('totalClients').innerText = clients.length;
 }
 
-// ============================================================
-// ✅ دوال التطبيقات - محسّنة وموثوقة// ============================================================
+// ✅ نظام التطبيقات المحسّن مع النسخ الاحتياطي
 const defaultApps = [
     { id: 'app1', name: 'مدرب التشخيص السني', description: 'تطبيق تدريبي لتطوير مهارات التشخيص السني.', image: '' },
     { id: 'app2', name: 'QuizDent', description: 'اختبارات ومراجعات لطلاب طب الأسنان.', image: '' },
@@ -839,7 +810,47 @@ const defaultApps = [
     { id: 'app4', name: 'الدليل', description: 'مرجع شامل للمعلومات المهنية.', image: '' }
 ];
 
-// ✅ إنشاء التطبيقات الافتراضية - محسّن
+// ✅ حفظ نسخة احتياطية في localStorage
+function backupAppsToLocalStorage() {
+    try {
+        localStorage.setItem('appsBackup', JSON.stringify(apps));
+        localStorage.setItem('appsBackupTime', new Date().toISOString());
+        console.log('💾 Apps backed up to localStorage:', apps.length);
+    } catch (e) {
+        console.error('❌ Backup error:', e);
+    }
+}
+
+// ✅ استعادة من النسخة الاحتياطية
+async function restoreAppsFromBackup() {
+    const backup = localStorage.getItem('appsBackup');
+    if (!backup) {
+        showToast('❌ لا توجد نسخة احتياطية', 'error');
+        return;
+    }
+    
+    if (!confirm('هل أنت متأكد من استعادة التطبيقات من النسخة الاحتياطية؟')) return;
+    
+    try {        const backupApps = JSON.parse(backup);
+        showToast('🔄 جاري الاستعادة...', 'info');
+        
+        for (const app of backupApps) {
+            await db.collection('apps').doc(app.id).set({
+                name: app.name,
+                description: app.description,
+                image: app.image,
+                restoredAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+        
+        showToast(`✅ تم استعادة ${backupApps.length} تطبيق`, 'success');
+    } catch (e) {
+        console.error('❌ Restore error:', e);
+        showToast('❌ خطأ في الاستعادة: ' + e.message, 'error', 5000);
+    }
+}
+
+// ✅ إنشاء التطبيقات الافتراضية
 async function initDefaultApps() {
     try {
         console.log('🔍 Checking for default apps...');
@@ -869,18 +880,17 @@ async function initDefaultApps() {
         showToast('⚠️ خطأ في التحقق من التطبيقات: ' + e.message, 'warning', 5000);
     }
 }
-
-// ✅ إعادة إنشاء التطبيقات الافتراضية (للمدير)
 async function resetDefaultApps() {
-    if (!confirm('هل أنت متأكد من إعادة إنشاء التطبيقات الافتراضية؟\nسيتم إضافة التطبيقات المفقودة فقط.')) return;
+    if (!confirm('هل أنت متأكد من إعادة إنشاء التطبيقات الافتراضية؟')) return;
     
     try {
-        showToast('🔄 جاري التحقق من التطبيقات...', 'info');
+        showToast('🔄 جاري التحقق...', 'info');
         
         const snapshot = await db.collection('apps').get();
         const existingIds = new Set(snapshot.docs.map(doc => doc.id));
         
-        let created = 0;        for (const app of defaultApps) {
+        let created = 0;
+        for (const app of defaultApps) {
             if (!existingIds.has(app.id)) {
                 await db.collection('apps').doc(app.id).set({
                     name: app.name,
@@ -889,22 +899,77 @@ async function resetDefaultApps() {
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 created++;
-                console.log(`✅ Recreated: ${app.name}`);
             }
         }
         
         if (created > 0) {
-            showToast(`✅ تم إنشاء ${created} تطبيق مفقود`, 'success');
+            showToast(`✅ تم إنشاء ${created} تطبيق`, 'success');
         } else {
-            showToast('✅ جميع التطبيقات موجودة بالفعل', 'success');
+            showToast('✅ جميع التطبيقات موجودة', 'success');
         }
     } catch (e) {
         console.error('❌ Reset apps error:', e);
-        showToast('❌ خطأ في إعادة إنشاء التطبيقات: ' + e.message, 'error', 5000);
+        showToast('❌ خطأ: ' + e.message, 'error', 5000);
     }
 }
 
-// ✅ الاستماع للتطبيقات - محسّن مع تتبع الأخطاء
+// ✅ عرض نموذج إضافة تطبيق جديد
+function showAddAppForm() {
+    const container = document.getElementById('addAppFormContainer');
+    container.innerHTML = `
+        <div class="card admin-app-edit" style="background:#e8f5e9;">
+            <h4>➕ إضافة تطبيق جديد</h4>
+            <div>
+                <label>اسم التطبيق *</label>
+                <input type="text" id="new_app_name" placeholder="اسم التطبيق">
+            </div>
+            <div>
+                <label>الوصف</label>
+                <textarea id="new_app_desc" rows="3" placeholder="وصف التطبيق"></textarea>
+            </div>
+            <div>
+                <label>رابط الصورة (اختياري)</label>
+                <input type="text" id="new_app_image" placeholder="https://example.com/image.jpg" dir="ltr">            </div>
+            <button class="success" onclick="addNewApp()">✅ إضافة التطبيق</button>
+            <button class="warning" onclick="hideAddAppForm()">❌ إلغاء</button>
+        </div>
+    `;
+}
+
+function hideAddAppForm() {
+    document.getElementById('addAppFormContainer').innerHTML = '';
+}
+
+// ✅ إضافة تطبيق جديد
+async function addNewApp() {
+    const name = document.getElementById('new_app_name').value.trim();
+    const desc = document.getElementById('new_app_desc').value.trim();
+    const imageUrl = document.getElementById('new_app_image').value.trim();
+    
+    if (!name) {
+        showToast('الاسم مطلوب', 'error');
+        return;
+    }
+    
+    try {
+        const newAppId = 'app_' + Date.now();
+        
+        await db.collection('apps').doc(newAppId).set({
+            name: name,
+            description: desc,
+            image: imageUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        hideAddAppForm();
+        showToast('✅ تم إضافة التطبيق بنجاح', 'success');
+    } catch (e) {
+        console.error('❌ Add app error:', e);
+        showToast('❌ خطأ في الإضافة: ' + e.message, 'error', 5000);
+    }
+}
+
+// ✅ الاستماع للتطبيقات مع النسخ الاحتياطي
 function listenApps() {
     if (appsListener) {
         console.log('⚠️ Apps listener already active');
@@ -913,8 +978,7 @@ function listenApps() {
     
     console.log('👂 Starting apps listener...');
     
-    appsListener = db.collection('apps')
-        .orderBy('name')
+    appsListener = db.collection('apps')        .orderBy('name')
         .onSnapshot(snap => {
             console.log(`📱 Apps snapshot received: ${snap.size} apps`);
             apps = [];
@@ -929,25 +993,41 @@ function listenApps() {
             });
             
             console.log('✅ Apps loaded:', apps.map(a => a.name));
-                        renderApps();
+            
+            // ✅ حفظ نسخة احتياطية تلقائياً
+            backupAppsToLocalStorage();
+            
+            renderApps();
             if (currentUser && currentUser.isAdmin) {
                 renderAdminApps();
             }
             document.getElementById('totalApps').innerText = apps.length;
         }, err => {
             console.error('❌ Apps listener error:', err);
-            document.getElementById('appsContainer').innerHTML = `
-                <div class="card" style="text-align:center; color:#e74c3c;">
-                    <h3>⚠️ خطأ في تحميل التطبيقات</h3>
-                    <p>${err.message}</p>
-                    <button class="primary" onclick="listenApps()">🔄 إعادة المحاولة</button>
-                </div>
-            `;
+            
+            // ✅ محاولة الاستعادة من النسخة الاحتياطية
+            const backup = localStorage.getItem('appsBackup');
+            if (backup) {
+                apps = JSON.parse(backup);
+                renderApps();
+                if (currentUser && currentUser.isAdmin) {
+                    renderAdminApps();
+                }
+                document.getElementById('totalApps').innerText = apps.length;
+                showToast('⚠️ تم التحميل من النسخة الاحتياطية', 'warning', 5000);
+            } else {
+                document.getElementById('appsContainer').innerHTML = `
+                    <div class="card" style="text-align:center; color:#e74c3c;">
+                        <h3>⚠️ خطأ في تحميل التطبيقات</h3>
+                        <p>${err.message}</p>
+                        <button class="primary" onclick="location.reload()">🔄 إعادة تحميل الصفحة</button>
+                    </div>
+                `;
+            }
         });
 }
 
-function renderApps() {
-    const container = document.getElementById('appsContainer');
+function renderApps() {    const container = document.getElementById('appsContainer');
     if (apps.length === 0) {
         container.innerHTML = '<div class="card"><p style="text-align:center;">لا توجد تطبيقات حالياً.</p></div>';
         return;
@@ -978,25 +1058,25 @@ function renderAdminApps() {
         return;
     }
     let html = '';
-    apps.forEach(app => {        html += `
+    apps.forEach(app => {
+        html += `
             <div class="card admin-app-edit">
                 <h4>${app.name}</h4>
                 <div>
                     <label>اسم التطبيق</label>
-                    <input type="text" id="edit_app_name_${app.id}" value="${app.name}" class="edit-app-name">
+                    <input type="text" id="edit_app_name_${app.id}" value="${app.name}">
                 </div>
                 <div>
                     <label>الوصف</label>
-                    <textarea id="edit_app_desc_${app.id}" rows="3" class="edit-app-desc">${app.description || ''}</textarea>
+                    <textarea id="edit_app_desc_${app.id}" rows="3">${app.description || ''}</textarea>
                 </div>
                 <div>
                     <label>رابط الصورة (URL)</label>
-                    <input type="text" id="edit_app_image_${app.id}" value="${app.image || ''}" placeholder="https://example.com/image.jpg" dir="ltr" class="edit-app-image">
+                    <input type="text" id="edit_app_image_${app.id}" value="${app.image || ''}" placeholder="https://example.com/image.jpg" dir="ltr">
                     <div id="edit_app_preview_${app.id}">
                         ${app.image ? `<img src="${app.image}" class="preview-img">` : ''}
                     </div>
-                </div>
-                <button class="primary" onclick="saveApp('${app.id}')">💾 حفظ التطبيق</button>
+                </div>                <button class="primary" onclick="saveApp('${app.id}')">💾 حفظ</button>
                 <button class="danger" onclick="deleteApp('${app.id}')">🗑 حذف</button>
                 <hr>
             </div>
@@ -1020,14 +1100,14 @@ function renderAdminApps() {
     });
 }
 
-// ✅ حفظ التطبيق - محسّن مع تتبع الأخطاء
 async function saveApp(appId) {
     const name = document.getElementById(`edit_app_name_${appId}`).value.trim();
     const desc = document.getElementById(`edit_app_desc_${appId}`).value.trim();
     const imageUrl = document.getElementById(`edit_app_image_${appId}`).value.trim();
     
     if (!name) {
-        showToast('الاسم مطلوب', 'error');        return;
+        showToast('الاسم مطلوب', 'error');
+        return;
     }
     
     try {
@@ -1041,31 +1121,26 @@ async function saveApp(appId) {
         }, { merge: true });
         
         console.log(`✅ App saved successfully: ${appId}`);
-        showToast('✅ تم حفظ التطبيق بنجاح', 'success');
+        showToast('✅ تم الحفظ', 'success');
     } catch (e) {
         console.error(`❌ Save app ${appId} error:`, e);
-        showToast('❌ حدث خطأ أثناء الحفظ: ' + e.message, 'error', 5000);
-    }
-}
+        showToast('❌ خطأ في الحفظ: ' + e.message, 'error', 5000);
+    }}
 
-// ✅ حذف التطبيق - محسّن
 async function deleteApp(appId) {
-    if (!confirm('هل أنت متأكد من حذف هذا التطبيق نهائياً؟')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا التطبيق؟')) return;
     
     try {
         console.log(`🗑 Deleting app: ${appId}`);
         await db.collection('apps').doc(appId).delete();
         console.log(`✅ App deleted: ${appId}`);
-        showToast('🗑 تم حذف التطبيق', 'success');
+        showToast('🗑 تم الحذف', 'success');
     } catch (e) {
         console.error(`❌ Delete app ${appId} error:`, e);
         showToast('❌ خطأ في الحذف: ' + e.message, 'error', 5000);
     }
 }
 
-// ============================================================
-// دوال الإدارة
-// ============================================================
 function listenAgents() {
     if (agentsListener) return;
     agentsListener = true;
@@ -1076,7 +1151,8 @@ function listenAgents() {
             snap.forEach(doc => {
                 const d = doc.data();
                 agents.push({
-                    id: doc.id,                    name: d.name || '',
+                    id: doc.id,
+                    name: d.name || '',
                     email: d.email || '',
                     country: d.country || '-',
                     city: d.city || '-',
@@ -1098,8 +1174,7 @@ function renderAgentsAdmin() {
         html += `
         <tr>
             <td>${a.name}</td>
-            <td>${a.email}</td>
-            <td>${a.country}</td>
+            <td>${a.email}</td>            <td>${a.country}</td>
             <td>${a.city}</td>
             <td>${a.phone}</td>
             <td>${a.level}</td>
@@ -1125,7 +1200,8 @@ async function toggleAgentStatus(id, newStatus) {
 }
 async function upgradeAgent(id, currentLevel) {
     const levels = ['فضي', 'ذهبي', 'بلاتيني'];
-    let idx = levels.indexOf(currentLevel);    if (idx === -1) idx = 0;
+    let idx = levels.indexOf(currentLevel);
+    if (idx === -1) idx = 0;
     const newLevel = levels[(idx + 1) % levels.length];
     if (newLevel === currentLevel) {
         showToast('الوكيل في أعلى مستوى', 'warning');
@@ -1147,13 +1223,9 @@ async function deleteAgent(id) {
         showToast('🗑 تم حذف الوكيل', 'success');
     } catch (e) { 
         console.error('❌ Delete agent error:', e);
-        showToast('❌ خطأ في الحذف', 'error'); 
-    }
+        showToast('❌ خطأ في الحذف', 'error');     }
 }
 
-// ============================================================
-// بدء التطبيق
-// ============================================================
 initDefaultApps().then(() => {
     console.log('✅ Default apps initialized');
     setLoginType('agent');
