@@ -199,6 +199,16 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     margin-bottom:15px;
     flex-wrap:wrap;
 }
+
+.empty-state {
+    text-align:center;
+    padding:40px 20px;
+    color:#95a5a6;
+}
+.empty-state h3 {
+    margin:10px 0;
+    color:#7f8c8d;
+}
 </style>
 </head>
 <body>
@@ -233,8 +243,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
             <input type="password" id="loginPassword" placeholder="كلمة المرور" dir="ltr">
         </div>
         <button class="primary" onclick="loginUser()" style="width:100%;">دخول</button>
-        <div class="switch-link">
-            ليس لديك حساب؟ <a onclick="showRegister()">سجل وكيلاً الآن</a>
+        <div class="switch-link">            ليس لديك حساب؟ <a onclick="showRegister()">سجل وكيلاً الآن</a>
         </div>
         <div id="loginError" style="color:red;text-align:center;margin-top:10px;"></div>
         
@@ -243,7 +252,8 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
                 📱 تواصل مع الإدارة عبر واتساب
             </a>
         </div>
-    </div></div>
+    </div>
+</div>
 
 <div id="registerPage" class="page">
     <div class="login-container">
@@ -282,8 +292,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
         </div>
         <div class="card" id="agentProfileCard">
             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;">
-                <div>
-                    <h3 style="margin:0; color:#1e4a6e;">👤 بيانات الوكيل</h3>
+                <div>                    <h3 style="margin:0; color:#1e4a6e;">👤 بيانات الوكيل</h3>
                     <p class="profile-info"><strong>الاسم:</strong> <span id="profileName">-</span></p>
                     <p class="profile-info"><strong>الدولة:</strong> <span id="profileCountry">-</span></p>
                     <p class="profile-info"><strong>المدينة:</strong> <span id="profileCity">-</span></p>
@@ -292,7 +301,8 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
                 <div>
                     <a id="whatsappLink" href="#" target="_blank" class="whatsapp-btn" style="display:none;">📱 تواصل عبر واتساب</a>
                 </div>
-            </div>        </div>
+            </div>
+        </div>
         <div class="card">
             <h3>رابط الوكيل</h3>
             <input id="agentLink" value="https://yourdomain.com/?agent=zak001">
@@ -331,7 +341,6 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
             <button class="primary" onclick="copyText('post1')">نسخ المنشور</button>
         </div>
     </div>
-
     <div id="notifications" class="page">
         <div class="card"><span class="badge">جديد</span><p>تم تحديث محتوى تطبيق مدرب التشخيص السني.</p></div>
         <div class="card"><span class="badge">جديد</span><p>إضافة مواد تسويقية جديدة للوكلاء.</p></div>
@@ -340,8 +349,13 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
     <div id="admin" class="page">
         <div class="card">
             <h3>👥 إدارة الوكلاء</h3>
+            <div class="admin-actions-bar">
+                <button class="warning" onclick="reloadAgents()">🔄 إعادة تحميل الوكلاء</button>
+                <button class="warning" onclick="restoreAgentsFromBackup()">💾 استعادة من النسخة الاحتياطية</button>
+            </div>
             <div style="overflow-x:auto;">
-                <table>                    <thead><tr><th>الاسم</th><th>البريد</th><th>الدولة</th><th>المدينة</th><th>الهاتف</th><th>المستوى</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+                <table>
+                    <thead><tr><th>الاسم</th><th>البريد</th><th>الدولة</th><th>المدينة</th><th>الهاتف</th><th>المستوى</th><th>الحالة</th><th>إجراءات</th></tr></thead>
                     <tbody id="adminAgentsTable"></tbody>
                 </table>
             </div>
@@ -350,7 +364,7 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
             <h3>📱 إدارة التطبيقات</h3>
             <div class="admin-actions-bar">
                 <button class="success" onclick="showAddAppForm()">➕ إضافة تطبيق جديد</button>
-                <button class="warning" onclick="restoreAppsFromBackup()">🔄 استعادة من النسخة الاحتياطية</button>
+                <button class="warning" onclick="restoreAppsFromBackup()">💾 استعادة من النسخة الاحتياطية</button>
                 <button class="warning" onclick="resetDefaultApps()">🔄 إعادة إنشاء الافتراضية</button>
             </div>
             <div id="addAppFormContainer"></div>
@@ -376,8 +390,7 @@ const manifestData = {
         {
             src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%231e4a6e'/><text x='256' y='280' font-size='280' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial'>W</text></svg>",
             sizes: "512x512",
-            type: "image/svg+xml",
-            purpose: "any maskable"
+            type: "image/svg+xml",            purpose: "any maskable"
         },
         {
             src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%231e4a6e'/><text x='96' y='110' font-size='110' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial'>W</text></svg>",
@@ -390,7 +403,8 @@ const manifestData = {
 const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
 document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
 
-const swCode = `self.addEventListener('install', e => {
+const swCode = `
+self.addEventListener('install', e => {
     self.skipWaiting();
 });
 self.addEventListener('activate', e => {
@@ -425,8 +439,7 @@ function installPWA() {
             }
             deferredPrompt = null;
             document.getElementById('installBtn').style.display = 'none';
-        });
-    } else {
+        });    } else {
         showToast('💡 لتثبيت التطبيق: اضغط على أيقونة المشاركة ثم "إضافة إلى الشاشة الرئيسية"', 'info', 5000);
     }
 }
@@ -439,7 +452,8 @@ const firebaseConfig = {
   storageBucket: "wakeel-5a1d2.firebasestorage.app",
   messagingSenderId: "864756617884",
   appId: "1:864756617884:web:962059064beebfce635359",
-  measurementId: "G-Z33WVNW5Z6"};
+  measurementId: "G-Z33WVNW5Z6"
+};
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 console.log('✅ Firebase initialized successfully');
@@ -462,7 +476,7 @@ let agents = [];
 let apps = [];
 let loginType = 'agent';
 let clientsListener = false;
-let agentsListener = false;
+let agentsListener = null;
 let appsListener = null;
 
 function showLogin() {
@@ -474,8 +488,7 @@ function showRegister() {
     document.getElementById('registerPage').classList.add('active');
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('regError').innerText = '';
-}
-function setLoginType(type) {
+}function setLoginType(type) {
     loginType = type;
     const agentBtn = document.getElementById('loginTypeAgent');
     const adminBtn = document.getElementById('loginTypeAdmin');
@@ -488,7 +501,8 @@ function setLoginType(type) {
         fieldsDiv.querySelector('input:first-child').placeholder = 'البريد الإلكتروني';
     } else {
         adminBtn.classList.add('active');
-        agentBtn.classList.remove('active');        emailField.classList.add('hidden');
+        agentBtn.classList.remove('active');
+        emailField.classList.add('hidden');
         fieldsDiv.querySelector('input:first-child').placeholder = 'كلمة المرور (للمدير)';
     }
     document.getElementById('loginError').innerText = '';
@@ -523,8 +537,7 @@ async function registerAgent() {
             showToast('البريد الإلكتروني مسجل مسبقاً', 'error');
             btn.disabled = false;
             btn.innerHTML = 'تسجيل';
-            return;
-        }
+            return;        }
         await db.collection('agents').add({
             name, email, password, country, city, phone,
             level: 'فضي',
@@ -537,7 +550,8 @@ async function registerAgent() {
         document.getElementById('regPassword').value = '';
         document.getElementById('regCountry').value = '';
         document.getElementById('regCity').value = '';
-        document.getElementById('regPhone').value = '';        errEl.innerText = '';
+        document.getElementById('regPhone').value = '';
+        errEl.innerText = '';
         setTimeout(() => {
             showLogin();
             btn.disabled = false;
@@ -572,8 +586,7 @@ async function loginUser() {
             showToast('✅ تم تسجيل دخول المدير بنجاح', 'success');
             enterApp();
         } else {
-            errEl.innerText = 'كلمة مرور المدير غير صحيحة';
-            showToast('❌ كلمة المرور غير صحيحة', 'error');
+            errEl.innerText = 'كلمة مرور المدير غير صحيحة';            showToast('❌ كلمة المرور غير صحيحة', 'error');
         }
         return;
     }
@@ -586,7 +599,8 @@ async function loginUser() {
     }
     try {
         const snapshot = await db.collection('agents').where('email', '==', email).get();
-        if (snapshot.empty) {            errEl.innerText = 'البريد غير مسجل';
+        if (snapshot.empty) {
+            errEl.innerText = 'البريد غير مسجل';
             showToast('❌ البريد غير مسجل', 'error');
             return;
         }
@@ -622,7 +636,6 @@ async function loginUser() {
         showToast('❌ خطأ في الاتصال: ' + e.message, 'error', 5000);
     }
 }
-
 function enterApp() {
     document.getElementById('loginPage').classList.remove('active');
     document.getElementById('registerPage').classList.remove('active');
@@ -635,7 +648,8 @@ function enterApp() {
     
     const adminBtn = document.getElementById('adminNavBtn');
     if (currentUser.isAdmin) {
-        adminBtn.classList.remove('hidden');    } else {
+        adminBtn.classList.remove('hidden');
+    } else {
         adminBtn.classList.add('hidden');
         if (document.getElementById('admin').classList.contains('active')) {
             showPage('home');
@@ -649,9 +663,8 @@ function enterApp() {
         listenClients();
         clientsListener = true;
     }
-    if (currentUser.isAdmin && !agentsListener) {
+    if (currentUser.isAdmin) {
         listenAgents();
-        agentsListener = true;
     }
     
     listenApps();
@@ -671,8 +684,7 @@ function updateProfileUI() {
         whatsappLink.href = `https://wa.me/${cleanPhone}`;
         whatsappLink.style.display = 'inline-flex';
     } else {
-        whatsappLink.style.display = 'none';
-    }
+        whatsappLink.style.display = 'none';    }
 }
 
 function logout() {
@@ -684,7 +696,8 @@ function logout() {
     document.getElementById('loginPage').classList.add('active');
     document.getElementById('loginError').innerText = '';
     setLoginType('agent');
-    showToast('👋 تم تسجيل الخروج', 'success');}
+    showToast('👋 تم تسجيل الخروج', 'success');
+}
 
 function checkSession() {
     const stored = localStorage.getItem('currentUser');
@@ -720,8 +733,7 @@ function checkSession() {
                             showToast('⚠️ تم إلغاء تفعيل حسابك', 'warning', 5000);
                         }
                     } else {
-                        localStorage.removeItem('currentUser');
-                        showLogin();
+                        localStorage.removeItem('currentUser');                        showLogin();
                     }
                 }).catch(() => {
                     currentUser = user;
@@ -733,7 +745,8 @@ function checkSession() {
             localStorage.removeItem('currentUser');
         }
     }
-    showLogin();}
+    showLogin();
+}
 
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -769,8 +782,7 @@ async function addClient() {
         document.getElementById('clientName').value = '';
         document.getElementById('clientCountry').value = '';
         document.getElementById('clientContact').value = '';
-        showToast('✅ تم إضافة العميل بنجاح', 'success');
-    } catch (e) { 
+        showToast('✅ تم إضافة العميل بنجاح', 'success');    } catch (e) { 
         console.error('❌ Add client error:', e);
         showToast('❌ خطأ في الإضافة: ' + e.message, 'error', 5000); 
     } finally {
@@ -782,7 +794,8 @@ function listenClients() {
     db.collection('clients')
         .where('agentEmail', '==', currentUser.email)
         .orderBy('createdAt', 'desc')
-        .onSnapshot(snap => {            clients = [];
+        .onSnapshot(snap => {
+            clients = [];
             snap.forEach(doc => {
                 const d = doc.data();
                 clients.push({ id: doc.id, name: d.name, country: d.country, app: d.app });
@@ -802,7 +815,6 @@ function renderClients() {
     document.getElementById('totalClients').innerText = clients.length;
 }
 
-// ✅ نظام التطبيقات المحسّن مع النسخ الاحتياطي
 const defaultApps = [
     { id: 'app1', name: 'مدرب التشخيص السني', description: 'تطبيق تدريبي لتطوير مهارات التشخيص السني.', image: '' },
     { id: 'app2', name: 'QuizDent', description: 'اختبارات ومراجعات لطلاب طب الأسنان.', image: '' },
@@ -810,7 +822,6 @@ const defaultApps = [
     { id: 'app4', name: 'الدليل', description: 'مرجع شامل للمعلومات المهنية.', image: '' }
 ];
 
-// ✅ حفظ نسخة احتياطية في localStorage
 function backupAppsToLocalStorage() {
     try {
         localStorage.setItem('appsBackup', JSON.stringify(apps));
@@ -820,8 +831,6 @@ function backupAppsToLocalStorage() {
         console.error('❌ Backup error:', e);
     }
 }
-
-// ✅ استعادة من النسخة الاحتياطية
 async function restoreAppsFromBackup() {
     const backup = localStorage.getItem('appsBackup');
     if (!backup) {
@@ -831,7 +840,8 @@ async function restoreAppsFromBackup() {
     
     if (!confirm('هل أنت متأكد من استعادة التطبيقات من النسخة الاحتياطية؟')) return;
     
-    try {        const backupApps = JSON.parse(backup);
+    try {
+        const backupApps = JSON.parse(backup);
         showToast('🔄 جاري الاستعادة...', 'info');
         
         for (const app of backupApps) {
@@ -850,7 +860,6 @@ async function restoreAppsFromBackup() {
     }
 }
 
-// ✅ إنشاء التطبيقات الافتراضية
 async function initDefaultApps() {
     try {
         console.log('🔍 Checking for default apps...');
@@ -871,8 +880,7 @@ async function initDefaultApps() {
                     console.error(`❌ Failed to create ${app.name}:`, err);
                 }
             }
-            showToast('✅ تم إنشاء التطبيقات الافتراضية', 'success');
-        } else {
+            showToast('✅ تم إنشاء التطبيقات الافتراضية', 'success');        } else {
             console.log(`✅ Found ${snapshot.size} apps in database`);
         }
     } catch (e) {
@@ -880,6 +888,7 @@ async function initDefaultApps() {
         showToast('⚠️ خطأ في التحقق من التطبيقات: ' + e.message, 'warning', 5000);
     }
 }
+
 async function resetDefaultApps() {
     if (!confirm('هل أنت متأكد من إعادة إنشاء التطبيقات الافتراضية؟')) return;
     
@@ -913,7 +922,6 @@ async function resetDefaultApps() {
     }
 }
 
-// ✅ عرض نموذج إضافة تطبيق جديد
 function showAddAppForm() {
     const container = document.getElementById('addAppFormContainer');
     container.innerHTML = `
@@ -921,15 +929,15 @@ function showAddAppForm() {
             <h4>➕ إضافة تطبيق جديد</h4>
             <div>
                 <label>اسم التطبيق *</label>
-                <input type="text" id="new_app_name" placeholder="اسم التطبيق">
-            </div>
+                <input type="text" id="new_app_name" placeholder="اسم التطبيق">            </div>
             <div>
                 <label>الوصف</label>
                 <textarea id="new_app_desc" rows="3" placeholder="وصف التطبيق"></textarea>
             </div>
             <div>
                 <label>رابط الصورة (اختياري)</label>
-                <input type="text" id="new_app_image" placeholder="https://example.com/image.jpg" dir="ltr">            </div>
+                <input type="text" id="new_app_image" placeholder="https://example.com/image.jpg" dir="ltr">
+            </div>
             <button class="success" onclick="addNewApp()">✅ إضافة التطبيق</button>
             <button class="warning" onclick="hideAddAppForm()">❌ إلغاء</button>
         </div>
@@ -940,7 +948,6 @@ function hideAddAppForm() {
     document.getElementById('addAppFormContainer').innerHTML = '';
 }
 
-// ✅ إضافة تطبيق جديد
 async function addNewApp() {
     const name = document.getElementById('new_app_name').value.trim();
     const desc = document.getElementById('new_app_desc').value.trim();
@@ -969,16 +976,15 @@ async function addNewApp() {
     }
 }
 
-// ✅ الاستماع للتطبيقات مع النسخ الاحتياطي
 function listenApps() {
     if (appsListener) {
-        console.log('⚠️ Apps listener already active');
-        return;
+        console.log('⚠️ Apps listener already active');        return;
     }
     
     console.log('👂 Starting apps listener...');
     
-    appsListener = db.collection('apps')        .orderBy('name')
+    appsListener = db.collection('apps')
+        .orderBy('name')
         .onSnapshot(snap => {
             console.log(`📱 Apps snapshot received: ${snap.size} apps`);
             apps = [];
@@ -994,7 +1000,6 @@ function listenApps() {
             
             console.log('✅ Apps loaded:', apps.map(a => a.name));
             
-            // ✅ حفظ نسخة احتياطية تلقائياً
             backupAppsToLocalStorage();
             
             renderApps();
@@ -1005,7 +1010,6 @@ function listenApps() {
         }, err => {
             console.error('❌ Apps listener error:', err);
             
-            // ✅ محاولة الاستعادة من النسخة الاحتياطية
             const backup = localStorage.getItem('appsBackup');
             if (backup) {
                 apps = JSON.parse(backup);
@@ -1023,11 +1027,11 @@ function listenApps() {
                         <button class="primary" onclick="location.reload()">🔄 إعادة تحميل الصفحة</button>
                     </div>
                 `;
-            }
-        });
+            }        });
 }
 
-function renderApps() {    const container = document.getElementById('appsContainer');
+function renderApps() {
+    const container = document.getElementById('appsContainer');
     if (apps.length === 0) {
         container.innerHTML = '<div class="card"><p style="text-align:center;">لا توجد تطبيقات حالياً.</p></div>';
         return;
@@ -1072,11 +1076,11 @@ function renderAdminApps() {
                 </div>
                 <div>
                     <label>رابط الصورة (URL)</label>
-                    <input type="text" id="edit_app_image_${app.id}" value="${app.image || ''}" placeholder="https://example.com/image.jpg" dir="ltr">
-                    <div id="edit_app_preview_${app.id}">
+                    <input type="text" id="edit_app_image_${app.id}" value="${app.image || ''}" placeholder="https://example.com/image.jpg" dir="ltr">                    <div id="edit_app_preview_${app.id}">
                         ${app.image ? `<img src="${app.image}" class="preview-img">` : ''}
                     </div>
-                </div>                <button class="primary" onclick="saveApp('${app.id}')">💾 حفظ</button>
+                </div>
+                <button class="primary" onclick="saveApp('${app.id}')">💾 حفظ</button>
                 <button class="danger" onclick="deleteApp('${app.id}')">🗑 حذف</button>
                 <hr>
             </div>
@@ -1121,11 +1125,11 @@ async function saveApp(appId) {
         }, { merge: true });
         
         console.log(`✅ App saved successfully: ${appId}`);
-        showToast('✅ تم الحفظ', 'success');
-    } catch (e) {
+        showToast('✅ تم الحفظ', 'success');    } catch (e) {
         console.error(`❌ Save app ${appId} error:`, e);
         showToast('❌ خطأ في الحفظ: ' + e.message, 'error', 5000);
-    }}
+    }
+}
 
 async function deleteApp(appId) {
     if (!confirm('هل أنت متأكد من حذف هذا التطبيق؟')) return;
@@ -1141,12 +1145,70 @@ async function deleteApp(appId) {
     }
 }
 
+// ✅ نظام الوكلاء المحسّن مع النسخ الاحتياطي
+function backupAgentsToLocalStorage() {
+    try {
+        localStorage.setItem('agentsBackup', JSON.stringify(agents));
+        localStorage.setItem('agentsBackupTime', new Date().toISOString());
+        console.log('💾 Agents backed up to localStorage:', agents.length);
+    } catch (e) {
+        console.error('❌ Backup agents error:', e);
+    }
+}
+
+async function restoreAgentsFromBackup() {
+    const backup = localStorage.getItem('agentsBackup');
+    if (!backup) {
+        showToast('❌ لا توجد نسخة احتياطية للوكلاء', 'error');
+        return;
+    }
+    
+    if (!confirm('هل أنت متأكد من استعادة الوكلاء من النسخة الاحتياطية؟')) return;
+    
+    try {
+        const backupAgents = JSON.parse(backup);
+        showToast('🔄 جاري الاستعادة...', 'info');
+        
+        for (const agent of backupAgents) {
+            await db.collection('agents').doc(agent.id).set({
+                name: agent.name,
+                email: agent.email,
+                country: agent.country,
+                city: agent.city,                phone: agent.phone,
+                level: agent.level,
+                status: agent.status,
+                restoredAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        }
+        
+        showToast(`✅ تم استعادة ${backupAgents.length} وكيل`, 'success');
+    } catch (e) {
+        console.error('❌ Restore agents error:', e);
+        showToast('❌ خطأ في الاستعادة: ' + e.message, 'error', 5000);
+    }
+}
+
+function reloadAgents() {
+    if (agentsListener) {
+        agentsListener();
+        agentsListener = null;
+    }
+    listenAgents();
+    showToast('🔄 جاري إعادة تحميل الوكلاء...', 'info');
+}
+
 function listenAgents() {
-    if (agentsListener) return;
-    agentsListener = true;
-    db.collection('agents')
+    if (agentsListener) {
+        console.log('⚠️ Agents listener already active');
+        return;
+    }
+    
+    console.log('👂 Starting agents listener...');
+    
+    agentsListener = db.collection('agents')
         .orderBy('createdAt', 'desc')
         .onSnapshot(snap => {
+            console.log(`👥 Agents snapshot received: ${snap.size} agents`);
             agents = [];
             snap.forEach(doc => {
                 const d = doc.data();
@@ -1161,22 +1223,56 @@ function listenAgents() {
                     status: d.status || 'inactive'
                 });
             });
+                        console.log('✅ Agents loaded:', agents.length);
+            
+            backupAgentsToLocalStorage();
             renderAgentsAdmin();
         }, err => {
             console.error('❌ Listen agents error:', err);
-            document.getElementById('adminAgentsTable').innerHTML = '<tr><td colspan="8">⚠️ خطأ في تحميل الوكلاء</td></tr>';
+            
+            const backup = localStorage.getItem('agentsBackup');
+            if (backup) {
+                agents = JSON.parse(backup);
+                renderAgentsAdmin();
+                showToast('⚠️ تم تحميل الوكلاء من النسخة الاحتياطية', 'warning', 5000);
+            } else {
+                document.getElementById('adminAgentsTable').innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <h3>⚠️ خطأ في تحميل الوكلاء</h3>
+                            <p>${err.message}</p>
+                            <button class="primary" onclick="reloadAgents()">🔄 إعادة المحاولة</button>
+                        </td>
+                    </tr>
+                `;
+            }
         });
 }
+
 function renderAgentsAdmin() {
+    const tbody = document.getElementById('adminAgentsTable');
+    
+    if (agents.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty-state">
+                    <h3>📭 لا يوجد وكلاء مسجلون</h3>
+                    <p>لم يتم تسجيل أي وكلاء بعد</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
     let html = '';
     agents.forEach(a => {
         const statusBadge = a.status === 'active' ? '<span class="badge">مفعّل</span>' : '<span class="badge inactive">غير مفعّل</span>';
         html += `
         <tr>
             <td>${a.name}</td>
-            <td>${a.email}</td>            <td>${a.country}</td>
-            <td>${a.city}</td>
-            <td>${a.phone}</td>
+            <td>${a.email}</td>
+            <td>${a.country}</td>
+            <td>${a.city}</td>            <td>${a.phone}</td>
             <td>${a.level}</td>
             <td>${statusBadge}</td>
             <td>
@@ -1186,8 +1282,9 @@ function renderAgentsAdmin() {
             </td>
         </tr>`;
     });
-    document.getElementById('adminAgentsTable').innerHTML = html;
+    tbody.innerHTML = html;
 }
+
 async function toggleAgentStatus(id, newStatus) {
     if (!confirm(`هل أنت متأكد من تغيير الحالة؟`)) return;
     try {
@@ -1198,6 +1295,7 @@ async function toggleAgentStatus(id, newStatus) {
         showToast('❌ خطأ في التحديث', 'error'); 
     }
 }
+
 async function upgradeAgent(id, currentLevel) {
     const levels = ['فضي', 'ذهبي', 'بلاتيني'];
     let idx = levels.indexOf(currentLevel);
@@ -1216,14 +1314,15 @@ async function upgradeAgent(id, currentLevel) {
         showToast('❌ خطأ في الترقية', 'error'); 
     }
 }
+
 async function deleteAgent(id) {
     if (!confirm('هل أنت متأكد من حذف هذا الوكيل نهائياً؟')) return;
     try {
         await db.collection('agents').doc(id).delete();
         showToast('🗑 تم حذف الوكيل', 'success');
     } catch (e) { 
-        console.error('❌ Delete agent error:', e);
-        showToast('❌ خطأ في الحذف', 'error');     }
+        console.error('❌ Delete agent error:', e);        showToast('❌ خطأ في الحذف', 'error'); 
+    }
 }
 
 initDefaultApps().then(() => {
