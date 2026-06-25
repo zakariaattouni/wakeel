@@ -366,12 +366,15 @@ th, td { border-bottom:1px solid #ddd; padding:10px; text-align:center; }
             </div>
         </div>
 
-        <!-- ✅ قسم العملاء في الإدارة (جديد) -->
+        <!-- ✅ قسم العملاء في الإدارة مع اسم الوكيل وزر حذف -->
         <div class="card">
             <h3>👥 العملاء المسجلون (جميع الوكلاء)</h3>
+            <div class="admin-actions-bar">
+                <button class="warning" onclick="updateClientAgentNames()">🔄 تحديث أسماء الوكلاء للعملاء</button>
+            </div>
             <div style="overflow-x:auto;">
                 <table>
-                    <thead><tr><th>اسم العميل</th><th>الدولة</th><th>التطبيق</th><th>الوكيل المسؤول</th></tr></thead>
+                    <thead><tr><th>اسم العميل</th><th>الدولة</th><th>التطبيق</th><th>الوكيل المسؤول</th><th>إجراءات</th></tr></thead>
                     <tbody id="adminClientsTable"></tbody>
                 </table>
             </div>
@@ -509,7 +512,7 @@ let loginType = 'agent';
 let clientsListener = false;
 let agentsListener = null;
 let appsListener = null;
-let allClientsListener = null; // ✅ مستمع لجميع العملاء (للمدير)
+let allClientsListener = null;
 
 // ============================================================
 // دوال الواجهة
@@ -932,34 +935,90 @@ function renderClients() {
 }
 
 // ============================================================
-// ✅ مستمع لجميع العملاء (للمدير)
+// ✅ مستمع لجميع العملاء (للمدير) مع زر حذف وعرض اسم الوكيل
 // ============================================================
 function listenAllClients() {
     if (allClientsListener) return;
     allClientsListener = db.collection('clients')
         .orderBy('createdAt', 'desc')
         .onSnapshot(snap => {
-            const tbody = document.getElementById('adminClientsTable');
-            if (snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">📭 لا يوجد عملاء مسجلون</td></tr>';
-                return;
-            }
-            let html = '';
-            snap.forEach(doc => {
-                const d = doc.data();
-                const agentName = d.agentName || 'غير معروف';
-                html += `<tr>
-                    <td>${d.name || '-'}</td>
-                    <td>${d.country || '-'}</td>
-                    <td>${d.app || '-'}</td>
-                    <td>${agentName}</td>
-                </tr>`;
-            });
-            tbody.innerHTML = html;
+            renderAdminClients(snap);
         }, err => {
             console.error('❌ Listen all clients error:', err);
-            document.getElementById('adminClientsTable').innerHTML = '<tr><td colspan="4">⚠️ خطأ في التحميل</td></tr>';
+            document.getElementById('adminClientsTable').innerHTML = '<tr><td colspan="5">⚠️ خطأ في التحميل</td></tr>';
         });
+}
+
+function renderAdminClients(snap) {
+    const tbody = document.getElementById('adminClientsTable');
+    if (snap.empty) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">📭 لا يوجد عملاء مسجلون</td></tr>';
+        return;
+    }
+    let html = '';
+    snap.forEach(doc => {
+        const d = doc.data();
+        // استخدام agentName المخزن، وإذا كان غير موجود نعرض "غير معروف"
+        const agentName = d.agentName || 'غير معروف';
+        html += `<tr>
+            <td>${d.name || '-'}</td>
+            <td>${d.country || '-'}</td>
+            <td>${d.app || '-'}</td>
+            <td>${agentName}</td>
+            <td>
+                <button class="danger" onclick="deleteClientByAdmin('${doc.id}')">🗑 حذف</button>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+// ============================================================
+// ✅ حذف عميل بواسطة المدير
+// ============================================================
+async function deleteClientByAdmin(clientId) {
+    if (!confirm('هل أنت متأكد من حذف هذا العميل؟')) return;
+    try {
+        await db.collection('clients').doc(clientId).delete();
+        showToast('🗑 تم حذف العميل بنجاح', 'success');
+    } catch (e) {
+        console.error('❌ Delete client error:', e);
+        showToast('❌ خطأ في الحذف: ' + e.message, 'error', 5000);
+    }
+}
+
+// ============================================================
+// ✅ تحديث أسماء الوكلاء للعملاء القدامى (للمدير)
+// ============================================================
+async function updateClientAgentNames() {
+    if (!confirm('سيتم تحديث أسماء الوكلاء لجميع العملاء بناءً على agentId. هل تريد المتابعة؟')) return;
+    try {
+        showToast('🔄 جاري التحديث...', 'info');
+        const clientsSnap = await db.collection('clients').get();
+        if (clientsSnap.empty) {
+            showToast('📭 لا يوجد عملاء لتحديثهم', 'warning');
+            return;
+        }
+        let updated = 0;
+        for (const doc of clientsSnap.docs) {
+            const data = doc.data();
+            if (data.agentId && !data.agentName) {
+                // جلب اسم الوكيل من مجموعة agents
+                const agentDoc = await db.collection('agents').doc(data.agentId).get();
+                if (agentDoc.exists) {
+                    const agentData = agentDoc.data();
+                    await db.collection('clients').doc(doc.id).update({
+                        agentName: agentData.name || 'غير معروف'
+                    });
+                    updated++;
+                }
+            }
+        }
+        showToast(`✅ تم تحديث ${updated} عميل`, 'success');
+    } catch (e) {
+        console.error('❌ Update error:', e);
+        showToast('❌ خطأ: ' + e.message, 'error', 5000);
+    }
 }
 
 // ============================================================
@@ -1183,10 +1242,10 @@ async function saveApp(appId) {
 }
 
 async function deleteApp(appId) {
-    if (!confirm('هل أنت متأكد من الحذف؟')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا التطبيق؟')) return;
     try {
         await db.collection('apps').doc(appId).delete();
-        showToast('🗑 تم الحذف', 'success');
+        showToast('🗑 تم حذف التطبيق', 'success');
     } catch (e) {
         showToast('❌ خطأ: ' + e.message, 'error', 5000);
     }
@@ -1333,10 +1392,10 @@ async function upgradeAgent(id, currentLevel) {
 }
 
 async function deleteAgent(id) {
-    if (!confirm('هل أنت متأكد من الحذف؟')) return;
+    if (!confirm('هل أنت متأكد من حذف هذا الوكيل؟')) return;
     try {
         await db.collection('agents').doc(id).delete();
-        showToast('🗑 تم الحذف', 'success');
+        showToast('🗑 تم حذف الوكيل', 'success');
     } catch (e) { 
         showToast('❌ خطأ: ' + e.message, 'error'); 
     }
